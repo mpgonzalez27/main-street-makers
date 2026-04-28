@@ -1732,6 +1732,7 @@ textarea {
   height: min(74dvh, 48rem);
   min-height: 35rem;
   border-radius: var(--radius-lg);
+  background: #eadcbd;
 }
 
 .mini-town-preview .founder-town-map {
@@ -1753,12 +1754,12 @@ textarea {
 
 .town-pin text {
   pointer-events: none;
-  font-size: 4px;
+  font-size: 3.75px;
   font-weight: 900;
   fill: var(--ink);
   paint-order: stroke;
-  stroke: rgba(247, 240, 223, 0.86);
-  stroke-width: 0.55px;
+  stroke: rgba(255, 248, 232, 0.92);
+  stroke-width: 0.68px;
 }
 
 .town-pin .pin-label {
@@ -1768,22 +1769,23 @@ textarea {
 
 .pin-glow {
   fill: var(--gold);
-  opacity: 0.24;
-  filter: blur(0.35px);
+  opacity: 0.2;
+  filter: blur(0.45px);
 }
 
 .pin-core {
   fill: var(--gold);
   stroke: #fff8e8;
-  stroke-width: 1.2;
+  stroke-width: 1.35;
+  filter: drop-shadow(0 0.8px 0.8px rgba(36, 26, 18, 0.16));
 }
 
 .town-pin.queue {
-  opacity: 0.72;
+  opacity: 0.78;
 }
 
 .town-pin.queue .pin-core {
-  fill: transparent;
+  fill: rgba(255, 248, 232, 0.52);
   stroke: var(--blue);
 }
 

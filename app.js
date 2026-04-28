@@ -731,6 +731,7 @@ function renderTown() {
 }
 
 function townSvg(interactive = true, profile = activeProfile()) {
+  const suffix = interactive ? "hub" : "preview";
   const places = WORKBOOKS.map((place) => {
     const status = workbookStatus(place, profile);
     const attrs = interactive
@@ -749,28 +750,108 @@ function townSvg(interactive = true, profile = activeProfile()) {
   return `
     <svg class="founder-town-map" viewBox="0 0 100 100" role="img" aria-label="Founder Town clickable business map">
       <defs>
-        <linearGradient id="townSky" x1="0" x2="1" y1="0" y2="1">
+        <linearGradient id="townSky-${suffix}" x1="0" x2="1" y1="0" y2="1">
           <stop offset="0" stop-color="#F7F0DF"/>
-          <stop offset="1" stop-color="#E6D6B8"/>
+          <stop offset=".55" stop-color="#F2E4C6"/>
+          <stop offset="1" stop-color="#E8D3A9"/>
         </linearGradient>
-        <filter id="paperShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="1.4" stdDeviation="1.2" flood-color="#241A12" flood-opacity=".18"/>
+        <linearGradient id="roadGold-${suffix}" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#C8A978"/>
+          <stop offset=".5" stop-color="#D7B76A"/>
+          <stop offset="1" stop-color="#B99454"/>
+        </linearGradient>
+        <filter id="paperShadow-${suffix}" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.2" stdDeviation="1.1" flood-color="#241A12" flood-opacity=".16"/>
+        </filter>
+        <filter id="softGlow-${suffix}" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="1.2" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
         </filter>
       </defs>
-      <rect x="2" y="2" width="96" height="96" rx="8" fill="url(#townSky)" stroke="#241A12" stroke-opacity=".18"/>
-      <path d="M7 78 C18 70 25 68 34 59 C45 48 54 51 63 39 C72 27 83 30 94 20" fill="none" stroke="#C8A978" stroke-width="9" stroke-linecap="round"/>
-      <path d="M7 78 C18 70 25 68 34 59 C45 48 54 51 63 39 C72 27 83 30 94 20" fill="none" stroke="#F7F0DF" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 4"/>
-      <path d="M8 24 C18 19 30 19 42 24 C53 29 62 25 73 19 C84 13 93 15 97 20" fill="none" stroke="#5E7FA3" stroke-width="5" stroke-linecap="round" opacity=".35"/>
-      <g filter="url(#paperShadow)" opacity=".96">
-        <path d="M12 66h16v10H12zM14 59h12v7H14z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".18"/>
-        <path d="M34 49h15v12H34zM37 43h9v6H37z" fill="#F0DFC0" stroke="#241A12" stroke-opacity=".18"/>
-        <path d="M56 58h15v13H56zM59 50h9v8H59z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".18"/>
-        <path d="M69 35h17v12H69zM72 28h11v7H72z" fill="#F3D8C8" stroke="#241A12" stroke-opacity=".18"/>
-        <path d="M45 22h16v12H45zM49 15h8v7H49z" fill="#E7D7EC" stroke="#241A12" stroke-opacity=".18"/>
-        <path d="M10 21h15v12H10zM13 15h9v6H13z" fill="#DEE7D9" stroke="#241A12" stroke-opacity=".18"/>
-        <path d="M78 76h16v11H78zM82 68h8v8H82z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".18"/>
+      <rect x="2" y="2" width="96" height="96" rx="10" fill="url(#townSky-${suffix})" stroke="#241A12" stroke-opacity=".18"/>
+      <path d="M7 23 C17 18 29 19 40 24 C52 30 62 26 74 19 C85 13 94 15 97 20" fill="none" stroke="#5E7FA3" stroke-width="6" stroke-linecap="round" opacity=".28"/>
+      <path d="M7 78 C18 70 25 68 34 59 C45 48 54 51 63 39 C72 27 83 30 94 20" fill="none" stroke="url(#roadGold-${suffix})" stroke-width="10" stroke-linecap="round"/>
+      <path d="M7 78 C18 70 25 68 34 59 C45 48 54 51 63 39 C72 27 83 30 94 20" fill="none" stroke="#FFF7E5" stroke-width="4.2" stroke-linecap="round" stroke-dasharray="5 5" opacity=".95"/>
+      <path d="M12 84 C22 82 33 88 44 84 C54 80 66 83 78 88 C87 92 94 88 98 85" fill="none" stroke="#2F5D46" stroke-width="2.5" stroke-linecap="round" opacity=".2"/>
+      <g class="town-skybits" opacity=".72">
+        <path d="M77 10c1.4-2 4.6-1.6 5.3.7 1.8-.7 3.9.4 4 2.2H73.8c.2-1.7 1.8-3 3.2-2.9z" fill="#FFF8E8"/>
+        <path d="M14 10c1-1.5 3.4-1.2 4 .5 1.4-.5 3 .3 3.1 1.7H11.3c.2-1.2 1.4-2.1 2.7-2.2z" fill="#FFF8E8"/>
+        <circle cx="88" cy="27" r="3.1" fill="#D7A84A" opacity=".45"/>
       </g>
-      <g class="town-trees" opacity=".75">
+      <g class="town-yards" opacity=".88">
+        <path d="M9 63c5-5 12-5 18-2 2 5-1 12-8 14-7 2-12-4-10-12z" fill="#DDE8D4"/>
+        <path d="M54 53c6-4 14-3 18 2 1 7-6 12-13 10-6-2-8-8-5-12z" fill="#DDE8D4"/>
+        <path d="M73 70c4-4 11-3 16 1 2 5-.7 11-7 13-6 1-11-5-9-14z" fill="#EEE6D3"/>
+      </g>
+      <g class="cute-buildings" filter="url(#paperShadow-${suffix})">
+        <g class="map-shop">
+          <path d="M12 66h17v10H12z" fill="#FFF8E8"/>
+          <path d="M14 59h13v7H14z" fill="#F2D8C8"/>
+          <path d="M11 66h19l-2 3H13z" fill="#B84A32"/>
+          <path d="M14 69h4v7h-4zM21 69h5v4h-5z" fill="#F7F0DF"/>
+        </g>
+        <g class="map-shop">
+          <path d="M33 49h17v13H33z" fill="#FFF8E8"/>
+          <path d="M36 43h11v6H36z" fill="#DDE8D4"/>
+          <path d="M32 49h19l-2 3H34z" fill="#5E7FA3"/>
+          <path d="M37 53h5v9h-5zM44 53h4v4h-4z" fill="#F7F0DF"/>
+        </g>
+        <g class="map-shop">
+          <path d="M55 58h17v13H55z" fill="#FFF8E8"/>
+          <path d="M58 51h10v7H58z" fill="#F0DFC0"/>
+          <path d="M54 58h19l-2 3H56z" fill="#2F5D46"/>
+          <path d="M60 62h5v9h-5zM67 62h3v4h-3z" fill="#F7F0DF"/>
+        </g>
+        <g class="map-shop">
+          <path d="M69 35h18v13H69z" fill="#F5DDD0"/>
+          <path d="M72 28h12v7H72z" fill="#F9E8B8"/>
+          <path d="M68 35h20l-2 3H70z" fill="#B84A32"/>
+          <path d="M74 39h6v9h-6zM82 39h3v4h-3z" fill="#FFF8E8"/>
+        </g>
+        <g class="map-shop">
+          <path d="M44 22h18v13H44z" fill="#E9DCEC"/>
+          <path d="M48 15h10v7H48z" fill="#F9E8B8"/>
+          <path d="M43 22h20l-2 3H45z" fill="#6E557E"/>
+          <path d="M50 26h5v9h-5zM57 26h3v4h-3z" fill="#FFF8E8"/>
+        </g>
+        <g class="map-shop">
+          <path d="M9 21h17v13H9z" fill="#DEE7D9"/>
+          <path d="M12 15h11v6H12z" fill="#FFF8E8"/>
+          <path d="M8 21h19l-2 3H10z" fill="#5E7FA3"/>
+          <path d="M14 25h5v9h-5zM21 25h3v4h-3z" fill="#F7F0DF"/>
+        </g>
+        <g class="map-shop">
+          <path d="M78 76h17v12H78z" fill="#FFF8E8"/>
+          <path d="M82 68h9v8H82z" fill="#F0DFC0"/>
+          <path d="M77 76h19l-2 3H79z" fill="#D7A84A"/>
+          <path d="M84 79h5v9h-5zM91 79h3v4h-3z" fill="#F7F0DF"/>
+        </g>
+        <g stroke="#241A12" stroke-opacity=".18" fill="none">
+          <path d="M12 66h17v10H12zM14 59h13v7H14z"/>
+          <path d="M33 49h17v13H33zM36 43h11v6H36z"/>
+          <path d="M55 58h17v13H55zM58 51h10v7H58z"/>
+          <path d="M69 35h18v13H69zM72 28h12v7H72z"/>
+          <path d="M44 22h18v13H44zM48 15h10v7H48z"/>
+          <path d="M9 21h17v13H9zM12 15h11v6H12z"/>
+          <path d="M78 76h17v12H78zM82 68h9v8H82z"/>
+        </g>
+      </g>
+      <g class="town-details" opacity=".92">
+        <path d="M31 40h9" stroke="#B84A32" stroke-width=".6" stroke-linecap="round" stroke-dasharray="1 1"/>
+        <path d="M64 25h9" stroke="#D7A84A" stroke-width=".6" stroke-linecap="round" stroke-dasharray="1 1"/>
+        <rect x="29" y="74" width="4.5" height="6" rx=".7" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".16"/>
+        <path d="M30 76h2.5M30 77.8h2.5" stroke="#5E7FA3" stroke-width=".45" opacity=".65"/>
+        <rect x="86" y="56" width="5" height="3" rx=".6" fill="#B84A32"/>
+        <circle cx="87" cy="59.5" r=".8" fill="#241A12" opacity=".55"/><circle cx="90" cy="59.5" r=".8" fill="#241A12" opacity=".55"/>
+        <path d="M70 53h5l2 3h-9z" fill="#D7A84A" stroke="#241A12" stroke-opacity=".15"/>
+        <path d="M72.5 53v-3" stroke="#B84A32" stroke-width=".6"/>
+        <circle cx="16" cy="82" r=".8" fill="#B84A32"/><circle cx="18" cy="81" r=".7" fill="#D7A84A"/><circle cx="20" cy="82.2" r=".8" fill="#6E557E"/>
+        <circle cx="57" cy="80" r=".8" fill="#B84A32"/><circle cx="59" cy="81" r=".7" fill="#D7A84A"/><circle cx="61" cy="80.1" r=".8" fill="#6E557E"/>
+      </g>
+      <g class="town-trees" opacity=".82" filter="url(#softGlow-${suffix})">
         <circle cx="19" cy="47" r="2.5" fill="#2F5D46"/><circle cx="22" cy="44" r="2" fill="#2F5D46"/>
         <circle cx="88" cy="38" r="2.4" fill="#2F5D46"/><circle cx="91" cy="42" r="1.9" fill="#2F5D46"/>
         <circle cx="42" cy="84" r="2.2" fill="#2F5D46"/><circle cx="46" cy="82" r="1.8" fill="#2F5D46"/>
