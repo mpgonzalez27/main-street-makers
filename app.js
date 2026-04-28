@@ -370,13 +370,117 @@ const WORKBOOKS = [
 ];
 
 const GROWTH_PATH = [
-  ["First Stand", "Learn the first business words."],
-  ["Small Shop", "Plan a simple shop with supplies and customers."],
-  ["Whole Town", "Keep records and serve more people."],
-  ["County Route", "Think about delivery and a second location."],
-  ["State Map", "Learn grown-up setup words."],
-  ["U.S. Business", "Study bigger business systems."],
+  ["Founder School", "Learn the first business words."],
+  ["Main Street", "Try tiny shops, stands, booths, and carts."],
+  ["Whole Town", "Serve customers in products, services, farms, and workshops."],
+  ["County Route", "Think about nearby delivery and a second location."],
+  ["State Map", "Learn bigger setup words and state rules."],
+  ["U.S. Business", "Study regional and national business systems."],
   ["World Shipping", "Optional future stage."],
+];
+
+const AREAS = [
+  {
+    id: "schoolhouse",
+    title: "Founder Schoolhouse",
+    shortTitle: "Schoolhouse",
+    icon: "🏫",
+    kicker: "Start here",
+    color: "gold",
+    description:
+      "Learn the words grown-ups use: business, customer, product, service, records, EIN, LLC, corporation, payroll, and more.",
+    prompt: "Start with the Schoolhouse, then explore the real-world business areas.",
+    marker: { x: 49, y: 68 },
+    bookIds: [
+      "idea-bench",
+      "customer-corner",
+      "workshop",
+      "money-notebook",
+      "ledger-office",
+      "town-hall",
+      "state-desk",
+      "federal-desk",
+      "payroll-counter",
+    ],
+  },
+  {
+    id: "main-street",
+    title: "Main Street Shops",
+    shortTitle: "Main Street",
+    icon: "🏪",
+    kicker: "First tiny businesses",
+    color: "red",
+    description:
+      "Visit simple child-sized businesses like a lemonade stand, bookmark shop, art booth, garden stand, or pet treat cart.",
+    prompt: "Use this area when your learner wants examples of real small starter businesses.",
+    marker: { x: 52, y: 42 },
+    bookIds: ["sign-shop", "market-booth", "price-post", "supply-store", "test-table"],
+  },
+  {
+    id: "products",
+    title: "Products Market",
+    shortTitle: "Products",
+    icon: "🧺",
+    kicker: "Things people buy",
+    color: "blue",
+    description:
+      "Explore businesses that make or sell things: cookies, cards, bracelets, bookmarks, garden baskets, and more.",
+    prompt: "Future workbooks can zoom into each product idea like an Atlas country.",
+    marker: { x: 27, y: 54 },
+    bookIds: ["supply-store", "test-table", "price-post", "market-booth"],
+  },
+  {
+    id: "services",
+    title: "Service Street",
+    shortTitle: "Services",
+    icon: "🧹",
+    kicker: "Helpful jobs",
+    color: "green",
+    description:
+      "Explore helpful-job businesses: lawn helper, party helper, reading buddy, pet helper, cleanup helper, and more.",
+    prompt: "This area helps kids see that not every business sells a thing.",
+    marker: { x: 73, y: 55 },
+    bookIds: ["workshop", "customer-corner", "market-booth", "price-post"],
+  },
+  {
+    id: "farm-fields",
+    title: "Farm & Food Fields",
+    shortTitle: "Farm Fields",
+    icon: "🌻",
+    kicker: "Food, gardens, and local goods",
+    color: "gold",
+    description:
+      "Explore garden stands, flower tables, egg stands, jam booths, and other wholesome farm-and-food ideas.",
+    prompt: "Future workbooks can teach safe, simple local-product examples.",
+    marker: { x: 22, y: 78 },
+    bookIds: ["idea-bench", "supply-store", "ledger-office", "town-hall"],
+  },
+  {
+    id: "maker-works",
+    title: "Maker Works",
+    shortTitle: "Maker Works",
+    icon: "🏭",
+    kicker: "Build, batch, and improve",
+    color: "purple",
+    description:
+      "Explore workshops, batches, quality checks, tools, supplies, and careful making.",
+    prompt: "This area is for maker-style businesses that build something step by step.",
+    marker: { x: 76, y: 29 },
+    bookIds: ["workshop", "supply-store", "money-notebook", "delivery-road"],
+  },
+  {
+    id: "growth-road",
+    title: "Growth Road",
+    shortTitle: "Growth Road",
+    icon: "🛻",
+    kicker: "Beyond the first idea",
+    color: "blue",
+    description:
+      "Follow the path from one small offer to a town, county, state, U.S., and world business map.",
+    prompt: "This is the long-term path after the first Schoolhouse and Main Street lessons.",
+    marker: { x: 49, y: 18 },
+    bookIds: ["delivery-road", "state-desk", "federal-desk", "payroll-counter"],
+  },
 ];
 
 const DEFAULT_STATE = { profiles: {}, activeProfileId: "" };
@@ -384,6 +488,7 @@ let memoryStore = null;
 let appState = loadRootState();
 let view = "welcome";
 let activePlaceId = "idea-bench";
+let activeAreaId = "schoolhouse";
 let drawerOpen = false;
 
 const app = document.getElementById("app");
@@ -565,11 +670,11 @@ function createProfile(name) {
 
 function brandMark() {
   return `
-    <svg class="brand-mark founder-mark" viewBox="0 0 80 80" role="img" aria-label="SAVE Learning Co. Founder Town mark">
-      <path d="M11 61h58" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-      <path d="M17 38h18v23H17zM45 26h18v35H45z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
-      <path d="M14 38l12-11 12 11M42 26l12-12 12 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="39" cy="51" r="7" fill="#D7A84A" stroke="currentColor" stroke-width="4"/>
+    <svg class="brand-mark founder-mark" viewBox="0 0 80 80" role="img" aria-label="SAVE Learning Co. Founder World mark">
+      <path d="M15 57 C25 48 35 49 40 58 C46 69 61 67 67 55" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+      <path d="M19 40h19v20H19zM46 29h17v31H46z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M17 40l12-10 12 10M43 29l11.5-10L66 29" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="24" r="8" fill="#D7A84A" stroke="currentColor" stroke-width="4"/>
     </svg>
   `;
 }
@@ -578,11 +683,11 @@ function topbar() {
   const profile = activeProfile();
   return `
     <header class="topbar founder-topbar">
-      <button class="brand-lockup brand-button" data-action="town" data-testid="button-brand-town" aria-label="Back to Founder Town">
+      <button class="brand-lockup brand-button" data-action="world" data-testid="button-brand-world" aria-label="Back to Founder World">
         ${brandMark()}
         <div>
           <div class="brand-kicker">SAVE Learning Co.</div>
-          <div class="brand-name">Founder Town</div>
+          <div class="brand-name">Founder World</div>
         </div>
       </button>
       <div class="top-actions">
@@ -602,7 +707,9 @@ function render() {
   let html = topbar();
   if (view === "welcome") html += renderWelcome();
   if (view === "profiles") html += renderProfiles();
-  if (view === "town") html += renderTown();
+  if (view === "world") html += renderWorld();
+  if (view === "area") html += renderArea();
+  if (view === "town") html += renderWorld();
   if (view === "workbook") html += renderWorkbook(activePlaceId);
   if (view === "notebook") html += renderNotebook();
   if (view === "parent") html += renderParentGuide();
@@ -616,7 +723,7 @@ function footer() {
   return `
     <footer class="footer-note">
       <strong>SAVE Learning Co.</strong> · © 2026 SAVE Learning Co. All rights reserved.
-      <br />Founder Town uses original CSS/SVG-style visuals. No stock photos are used in this v1 app.
+      <br />Founder World uses original CSS/SVG-style visuals. No stock photos are used in this v1 app.
     </footer>
   `;
 }
@@ -628,10 +735,10 @@ function renderWelcome() {
     <main class="founder-welcome">
       <section class="welcome-copy">
         <span class="kicker">SAVE Small Town Business</span>
-        <h1>Founder Town</h1>
-        <p>${learnerLine} Tap a place in town. Open a workbook. Build your Founder Notebook.</p>
+        <h1>Founder World</h1>
+        <p>${learnerLine} Start at the Schoolhouse. Then tap a business area, open a workbook, or queue a future one.</p>
         <div class="hero-actions">
-          <button class="primary-button" data-action="start" data-testid="button-start">Enter Founder Town</button>
+          <button class="primary-button" data-action="start" data-testid="button-start">Enter Founder World</button>
           <button class="secondary-button" data-action="parent" data-testid="button-parent-welcome">Parent Guide</button>
         </div>
         <div class="map-legend welcome-legend">
@@ -639,8 +746,8 @@ function renderWelcome() {
           <span><i class="dot queue"></i> Tap to queue</span>
         </div>
       </section>
-      <section class="mini-town-preview" aria-label="Founder Town preview">
-        ${townSvg(false)}
+      <section class="mini-town-preview" aria-label="Founder World preview">
+        ${worldSvg(false)}
       </section>
     </main>
   `;
@@ -707,22 +814,50 @@ function renderSharedProfiles() {
   `;
 }
 
-function renderTown() {
+function renderWorld() {
   const profile = activeProfile();
-  const place = getWorkbook(activePlaceId) || WORKBOOKS[0];
+  const area = getArea(activeAreaId) || AREAS[0];
   return `
-    <main class="town-shell">
-      <section class="town-stage" aria-label="Clickable Founder Town map">
+    <main class="town-shell world-shell">
+      <section class="town-stage world-stage" aria-label="Clickable Founder World map">
         <div class="town-title-card">
-          <span class="kicker">Clickable business town</span>
-          <h1>Tap a place to open a workbook.</h1>
-          <p>Ready places open now. Other places can be queued for future workbooks.</p>
+          <span class="kicker">Farthest view first</span>
+          <h1>Choose a business world.</h1>
+          <p>Start at the Schoolhouse. Then zoom into products, services, farms, makers, and growth paths.</p>
         </div>
-        ${townSvg(true, profile)}
+        ${worldSvg(true, profile)}
         <div class="town-controls">
-          <button class="secondary-button" data-action="notebook" data-testid="button-notebook-town">Founder Notebook</button>
-          <button class="secondary-button" data-action="growth" data-testid="button-growth-town">Growth Map</button>
-          <button class="secondary-button" data-action="library" data-testid="button-library-town">Library</button>
+          <button class="secondary-button" data-action="notebook" data-testid="button-notebook-world">Founder Notebook</button>
+          <button class="secondary-button" data-action="growth" data-testid="button-growth-world">Growth Map</button>
+          <button class="secondary-button" data-action="library" data-testid="button-library-world">Library</button>
+        </div>
+      </section>
+      ${renderAreaSheet(area, profile)}
+    </main>
+  `;
+}
+
+function renderArea() {
+  const profile = activeProfile();
+  const area = getArea(activeAreaId) || AREAS[0];
+  const books = areaWorkbooks(area.id);
+  const place = getWorkbook(activePlaceId) && area.bookIds.includes(activePlaceId)
+    ? getWorkbook(activePlaceId)
+    : books[0] || WORKBOOKS[0];
+  activePlaceId = place.id;
+  return `
+    <main class="town-shell area-shell">
+      <section class="town-stage area-stage" aria-label="${escapeHtml(area.title)} workbook map">
+        <div class="town-title-card area-title-card">
+          <span class="kicker">${escapeHtml(area.kicker)}</span>
+          <h1>${escapeHtml(area.title)}</h1>
+          <p>${escapeHtml(area.description)}</p>
+        </div>
+        ${areaMapSvg(area, true, profile)}
+        <div class="town-controls">
+          <button class="secondary-button" data-action="world" data-testid="button-back-world">World Map</button>
+          <button class="secondary-button" data-action="notebook" data-testid="button-notebook-area">Founder Notebook</button>
+          <button class="secondary-button" data-action="library" data-testid="button-library-area">Library</button>
         </div>
       </section>
       ${renderPlaceSheet(place, profile)}
@@ -730,15 +865,110 @@ function renderTown() {
   `;
 }
 
-function townSvg(interactive = true, profile = activeProfile()) {
+function renderAreaSheet(area, profile) {
+  const books = areaWorkbooks(area.id);
+  const ready = books.filter((book) => book.status === "ready").length;
+  const queued = books.filter((book) => profile?.queuedWorkbooks?.includes(book.id)).length;
+  const first = books[0] || WORKBOOKS[0];
+  return `
+    <aside class="place-sheet area-sheet" data-testid="area-sheet">
+      <div class="sheet-handle"></div>
+      <div class="place-sheet-head">
+        <div class="place-icon area-icon ${area.color}">${area.icon}</div>
+        <div>
+          <span class="kicker">${escapeHtml(area.kicker)}</span>
+          <h2>${escapeHtml(area.title)}</h2>
+          <p>${escapeHtml(area.description)}</p>
+        </div>
+      </div>
+      <div class="sheet-status-row">
+        <span class="badge-chip ready">${ready} ready</span>
+        <span class="badge-chip queued">${queued} queued</span>
+        <span class="badge-chip">${books.length} map pins</span>
+      </div>
+      <p class="small-note">${escapeHtml(area.prompt)}</p>
+      <div class="area-preview-list">
+        ${books.slice(0, 5).map((book) => `<span>${book.icon} ${escapeHtml(book.workbookTitle)}</span>`).join("")}
+      </div>
+      <div class="sheet-actions">
+        <button class="primary-button" data-action="enter-area" data-area="${area.id}" data-first-place="${first.id}" data-testid="button-enter-area">Enter ${escapeHtml(area.shortTitle)} →</button>
+        <button class="secondary-button" data-action="library" data-testid="button-area-library">Workbook Library</button>
+      </div>
+    </aside>
+  `;
+}
+
+function worldSvg(interactive = true, profile = activeProfile()) {
+  const suffix = interactive ? "world" : "world-preview";
+  const areas = AREAS.map((area) => {
+    const books = areaWorkbooks(area.id);
+    const completed = books.filter((book) => profile?.completedWorkbooks?.includes(book.id)).length;
+    const status = completed && completed === books.filter((book) => book.status === "ready").length ? "done" : area.id === activeAreaId ? "active" : "";
+    const attrs = interactive
+      ? `role="button" tabindex="0" data-area="${area.id}" data-testid="button-area-${area.id}" aria-label="${escapeHtml(area.title)}"`
+      : "";
+    return `
+      <g class="world-area area-${area.color} ${status}" transform="translate(${area.marker.x} ${area.marker.y})" ${attrs}>
+        <circle class="area-halo" r="10.5"></circle>
+        <circle class="area-core" r="7.2"></circle>
+        <text class="area-emoji" x="0" y="1.2" text-anchor="middle">${area.icon}</text>
+        <text class="area-label" x="0" y="15.4" text-anchor="middle">${escapeSvg(area.shortTitle)}</text>
+      </g>
+    `;
+  }).join("");
+
+  return `
+    <svg class="founder-world-map" viewBox="0 0 100 100" role="img" aria-label="Founder World clickable business map">
+      <defs>
+        <linearGradient id="worldPaper-${suffix}" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#FFF8E8"/>
+          <stop offset=".52" stop-color="#F0DFC0"/>
+          <stop offset="1" stop-color="#DDBF82"/>
+        </linearGradient>
+        <filter id="worldShadow-${suffix}" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.2" stdDeviation="1.4" flood-color="#241A12" flood-opacity=".17"/>
+        </filter>
+      </defs>
+      <rect x="2" y="2" width="96" height="96" rx="12" fill="url(#worldPaper-${suffix})" stroke="#241A12" stroke-opacity=".16"/>
+      <path d="M15 72 C25 57 36 62 49 52 C61 43 60 29 49 18" fill="none" stroke="#C8A978" stroke-width="8" stroke-linecap="round" opacity=".82"/>
+      <path d="M49 52 C35 47 29 50 23 54" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
+      <path d="M51 51 C64 47 70 51 75 55" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
+      <path d="M57 43 C65 35 72 31 78 29" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
+      <path d="M40 59 C32 67 25 73 22 78" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
+      <g class="world-landmarks" filter="url(#worldShadow-${suffix})">
+        <path d="M38 70h23v13H38z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".15"/>
+        <path d="M34 70h31l-15.5-13z" fill="#B84A32" stroke="#241A12" stroke-opacity=".15"/>
+        <path d="M46 75h7v8h-7z" fill="#F7F0DF" stroke="#241A12" stroke-opacity=".14"/>
+        <path d="M22 47h15v11H22z" fill="#FFF8E8"/><path d="M21 47h17l-2 3H23z" fill="#5E7FA3"/>
+        <path d="M68 49h16v11H68z" fill="#FFF8E8"/><path d="M67 49h18l-2 3H69z" fill="#2F5D46"/>
+        <path d="M69 22h18v12H69z" fill="#E9DCEC"/><path d="M72 17h12v5H72z" fill="#6E557E"/>
+        <path d="M13 73h18v10H13z" fill="#F2E4C6"/><path d="M13 73l9-8 9 8z" fill="#D7A84A"/>
+        <circle cx="84" cy="73" r="4" fill="#D7A84A" opacity=".5"/>
+      </g>
+      <g class="world-dots" opacity=".55">
+        <circle cx="15" cy="22" r="1.1" fill="#2F5D46"/><circle cx="18" cy="27" r=".8" fill="#2F5D46"/>
+        <circle cx="86" cy="43" r="1.1" fill="#B84A32"/><circle cx="82" cy="40" r=".75" fill="#B84A32"/>
+        <circle cx="12" cy="91" r="1" fill="#6E557E"/><circle cx="90" cy="88" r=".85" fill="#5E7FA3"/>
+      </g>
+      ${areas}
+    </svg>
+  `;
+}
+
+function areaMapSvg(area, interactive = true, profile = activeProfile()) {
+  return townSvg(interactive, profile, areaWorkbooks(area.id), area);
+}
+
+function townSvg(interactive = true, profile = activeProfile(), books = WORKBOOKS, area = null) {
   const suffix = interactive ? "hub" : "preview";
-  const places = WORKBOOKS.map((place) => {
+  const places = books.map((place, index) => {
     const status = workbookStatus(place, profile);
+    const marker = areaMarker(place, area, index);
     const attrs = interactive
       ? `role="button" tabindex="0" data-place="${place.id}" data-testid="button-place-${place.id}" aria-label="${escapeHtml(place.place)}"`
       : "";
     return `
-      <g class="town-pin pin-${place.color} ${status}" transform="translate(${place.marker.x} ${place.marker.y})" ${attrs}>
+      <g class="town-pin pin-${place.color} ${status}" transform="translate(${marker.x} ${marker.y})" ${attrs}>
         <circle class="pin-glow" r="5.8"></circle>
         <circle class="pin-core" r="3.15"></circle>
         <text x="0" y="-7.2" text-anchor="middle">${place.icon}</text>
@@ -748,7 +978,7 @@ function townSvg(interactive = true, profile = activeProfile()) {
   }).join("");
 
   return `
-    <svg class="founder-town-map" viewBox="0 0 100 100" role="img" aria-label="Founder Town clickable business map">
+    <svg class="founder-town-map" viewBox="0 0 100 100" role="img" aria-label="${area ? escapeHtml(area.title) : "Founder World"} workbook area map">
       <defs>
         <linearGradient id="townSky-${suffix}" x1="0" x2="1" y1="0" y2="1">
           <stop offset="0" stop-color="#F7F0DF"/>
@@ -866,13 +1096,14 @@ function renderPlaceSheet(place, profile) {
   const ready = place.status === "ready";
   const queued = profile?.queuedWorkbooks?.includes(place.id);
   const done = profile?.completedWorkbooks?.includes(place.id);
+  const area = areaForWorkbook(place.id, activeAreaId);
   return `
     <aside class="place-sheet" data-testid="place-sheet">
       <div class="sheet-handle"></div>
       <div class="place-sheet-head">
         <div class="place-icon ${status}">${place.icon}</div>
         <div>
-          <span class="kicker">Vol. ${place.number} · ${escapeHtml(place.district)}</span>
+          <span class="kicker">Vol. ${place.number} · ${escapeHtml(area.shortTitle)} · ${escapeHtml(place.district)}</span>
           <h2>${escapeHtml(place.place)}</h2>
           <p>${escapeHtml(place.subtitle || "This workbook is waiting on the future shelf.")}</p>
         </div>
@@ -894,9 +1125,11 @@ function renderPlaceSheet(place, profile) {
 function renderWorkbook(id) {
   const profile = activeProfile();
   const workbook = getWorkbook(id) || WORKBOOKS[0];
+  const area = areaForWorkbook(workbook.id, activeAreaId);
+  activeAreaId = area.id;
   if (workbook.status !== "ready") {
-    view = "town";
-    return renderTown();
+    view = "area";
+    return renderArea();
   }
   const note = profile?.notebook?.[workbook.id] || "";
   const done = profile?.completedWorkbooks?.includes(workbook.id);
@@ -904,20 +1137,20 @@ function renderWorkbook(id) {
     <main class="reader-shell" data-testid="workbook-reader">
       <section class="workbook-cover">
         <div class="cover-art">
-          ${townSvg(false, profile)}
+          ${areaMapSvg(area, false, profile)}
         </div>
         <div class="cover-copy">
           <button class="mark-done ${done ? "checked" : ""}" data-action="mark-done" data-workbook="${workbook.id}" data-testid="button-mark-done">${done ? "✓ Done" : "□ Mark done"}</button>
-          <span class="kicker">Vol. ${workbook.number} · ${escapeHtml(workbook.district)}</span>
+          <span class="kicker">Vol. ${workbook.number} · ${escapeHtml(area.shortTitle)} · ${escapeHtml(workbook.district)}</span>
           <h1>${escapeHtml(workbook.workbookTitle)}</h1>
           <p>${escapeHtml(workbook.subtitle)}</p>
-          <button class="secondary-button" data-action="town" data-testid="button-back-town-reader">Back to town</button>
+          <button class="secondary-button" data-action="area" data-testid="button-back-area-reader">Back to ${escapeHtml(area.shortTitle)}</button>
         </div>
       </section>
       <section class="reader-page about-book">
         <span class="kicker">About this workbook</span>
         <h2>${escapeHtml(workbook.place)}: ${escapeHtml(workbook.workbookTitle)}</h2>
-        <p>Part of the SAVE Small Town Business series published by SAVE Learning Co. Designed for curious readers around Grade 3 with a parent nearby.</p>
+        <p>Part of the SAVE Founder World series published by SAVE Learning Co. Designed for curious readers around Grade 3 with a parent nearby.</p>
         <p><strong>© 2026 SAVE Learning Co. All rights reserved.</strong></p>
         <p>This workbook is for learning only. It is not legal, tax, payroll, or accounting advice.</p>
       </section>
@@ -960,16 +1193,22 @@ function renderLibraryDrawer() {
         <span class="kicker">My Library</span>
         <button class="icon-button" data-action="close-library" data-testid="button-close-library" aria-label="Close library">✕</button>
       </div>
-      <h2>SAVE Business Workbooks</h2>
+      <h2>Founder World Workbooks</h2>
       <div class="library-list">
-        ${WORKBOOKS.map((book) => {
-          const status = workbookStatus(book, profile);
+        ${AREAS.map((area) => {
+          const books = areaWorkbooks(area.id);
           return `
-            <button class="library-row ${status}" data-place="${book.id}" data-testid="button-library-${book.id}">
-              <span>${book.number}</span>
-              <strong>${escapeHtml(book.workbookTitle)}</strong>
-              <em>${book.status === "ready" ? "Ready" : profile?.queuedWorkbooks?.includes(book.id) ? "Queued" : "Queue"}</em>
-            </button>
+            <div class="library-area-label">${area.icon} ${escapeHtml(area.shortTitle)}</div>
+            ${books.map((book) => {
+              const status = workbookStatus(book, profile);
+              return `
+                <button class="library-row ${status}" data-area="${area.id}" data-place="${book.id}" data-testid="button-library-${area.id}-${book.id}">
+                  <span>${book.number}</span>
+                  <strong>${escapeHtml(book.workbookTitle)}</strong>
+                  <em>${book.status === "ready" ? "Ready" : profile?.queuedWorkbooks?.includes(book.id) ? "Queued" : "Queue"}</em>
+                </button>
+              `;
+            }).join("")}
           `;
         }).join("")}
       </div>
@@ -998,7 +1237,7 @@ function renderNotebook() {
           <button class="primary-button" type="submit" data-testid="button-save-business-idea">Save Business Idea</button>
         </form>
         <div class="notebook-page">
-          <span class="kicker">Town Progress</span>
+          <span class="kicker">Founder World Progress</span>
           <div class="ledger-list">
             <div class="ledger-row"><span>Workbooks complete</span><strong>${completedCount(profile)} of ${readyWorkbooks().length}</strong></div>
             <div class="ledger-row"><span>Future workbooks queued</span><strong>${queuedCount(profile)}</strong></div>
@@ -1021,20 +1260,22 @@ function renderParentGuide() {
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Parent Guide</span>
-        <h1>How Founder Town works</h1>
-        <p>Founder Town uses the Expedition Atlas pattern: farthest view first, tap a place, open a workbook, or queue a future workbook.</p>
+        <h1>How Founder World works</h1>
+        <p>Founder World uses the Expedition Atlas pattern: farthest view first, tap an area, zoom in, open a workbook, or queue a future workbook.</p>
       </section>
       <section class="parent-card">
         <h2>What this teaches</h2>
-        <p>SAVE Small Town Business teaches children the first ideas of entrepreneurship through play: finding a need, creating a product or service, buying supplies, setting prices, serving customers, tracking money in and money out, finding profit, saving, reinvesting, and understanding a simple civic version of taxes.</p>
+        <p>SAVE Founder World teaches children the first ideas of entrepreneurship through short map-linked workbooks: finding a need, creating a product or service, buying supplies, setting prices, serving customers, tracking money in and money out, finding profit, saving, reinvesting, and understanding a simple civic version of taxes.</p>
         <div class="pull-note">The Town Share activity is not tax or legal advice. It is a child-friendly model showing that businesses keep records and contribute to shared community needs.</div>
         <div class="pull-note">This workbook is for learning only. It is not legal, tax, payroll, or accounting advice. A real business owner should ask a qualified professional and check federal, state, and local rules.</div>
       </section>
       <section class="grid">
-        ${groupByDistrict().map(([district, books]) => `
+        ${AREAS.map((area) => `
           <div class="parent-card">
-            <span class="kicker">${escapeHtml(district)}</span>
-            <div class="ledger-list">${books.map((book) => `<div class="ledger-row"><span>${book.number}. ${escapeHtml(book.workbookTitle)}</span><strong>${book.status === "ready" ? "ready" : "queue"}</strong></div>`).join("")}</div>
+            <span class="kicker">${escapeHtml(area.kicker)}</span>
+            <h2>${area.icon} ${escapeHtml(area.title)}</h2>
+            <p>${escapeHtml(area.description)}</p>
+            <div class="ledger-list">${areaWorkbooks(area.id).map((book) => `<div class="ledger-row"><span>${book.number}. ${escapeHtml(book.workbookTitle)}</span><strong>${book.status === "ready" ? "ready" : "queue"}</strong></div>`).join("")}</div>
           </div>
         `).join("")}
       </section>
@@ -1052,8 +1293,8 @@ function renderGrowthPath() {
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Big Map Path</span>
-        <h1>Founder Town can grow beyond Main Street.</h1>
-        <p>V1 focuses on the first town. Future volumes can grow toward bigger business systems.</p>
+        <h1>Founder World can grow beyond the first map.</h1>
+        <p>V1 focuses on the Schoolhouse and the first business areas. Future volumes can zoom from tiny shops to bigger business systems.</p>
       </section>
       <section class="parent-card">
         <div class="path-list">
@@ -1074,7 +1315,7 @@ function renderSources() {
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Sources & Licensing</span>
-        <h1>Founder Town source notes</h1>
+        <h1>Founder World source notes</h1>
         <p>V1 uses original illustrated CSS/SVG visuals. No stock photos are used.</p>
       </section>
       <section class="parent-card">
@@ -1103,7 +1344,7 @@ function wireEvents() {
       const action = button.dataset.action;
       if (action === "start") {
         if (activeProfile()) {
-          view = "town";
+          view = "world";
         } else if (hasSharedProfiles()) {
           view = "welcome";
           window.ProfileAPI.openPicker?.({ allowClose: false });
@@ -1118,7 +1359,13 @@ function wireEvents() {
         }
         view = "profiles";
       }
-      if (action === "town") view = activeProfile() ? "town" : "welcome";
+      if (action === "world" || action === "town") view = activeProfile() ? "world" : "welcome";
+      if (action === "area") view = activeProfile() ? "area" : "welcome";
+      if (action === "enter-area") {
+        activeAreaId = button.dataset.area || activeAreaId;
+        activePlaceId = button.dataset.firstPlace || firstAreaBook(activeAreaId)?.id || activePlaceId;
+        view = activeProfile() ? "area" : "welcome";
+      }
       if (action === "notebook") view = "notebook";
       if (action === "parent") view = "parent";
       if (action === "growth") view = "growth";
@@ -1127,6 +1374,7 @@ function wireEvents() {
       if (action === "close-library") drawerOpen = false;
       if (action === "open-workbook") {
         activePlaceId = button.dataset.workbook;
+        activeAreaId = areaForWorkbook(activePlaceId, activeAreaId).id;
         view = "workbook";
       }
       if (action === "queue-workbook") toggleQueue(button.dataset.workbook);
@@ -1140,7 +1388,7 @@ function wireEvents() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     createProfile(form.get("profileName"));
-    view = "town";
+    view = "world";
     render();
   });
 
@@ -1163,7 +1411,7 @@ function wireEvents() {
     button.addEventListener("click", () => {
       appState.activeProfileId = button.dataset.profileId;
       saveRootState();
-      view = "town";
+      view = "world";
       render();
     });
   });
@@ -1171,16 +1419,32 @@ function wireEvents() {
   document.querySelectorAll("[data-shared-profile-id]").forEach((button) => {
     button.addEventListener("click", () => {
       window.ProfileAPI.setActive?.(button.dataset.sharedProfileId);
-      view = "town";
+      view = "world";
       render();
+    });
+  });
+
+  document.querySelectorAll("[data-area]").forEach((button) => {
+    const selectArea = () => {
+      activeAreaId = button.dataset.area;
+      drawerOpen = false;
+      if (!button.dataset.place) render();
+    };
+    button.addEventListener("click", selectArea);
+    button.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectArea();
+      }
     });
   });
 
   document.querySelectorAll("[data-place]").forEach((button) => {
     const selectPlace = () => {
       activePlaceId = button.dataset.place;
+      activeAreaId = areaForWorkbook(activePlaceId, activeAreaId).id;
       drawerOpen = false;
-      view = "town";
+      view = "area";
       render();
     };
     button.addEventListener("click", selectPlace);
@@ -1246,15 +1510,43 @@ function readyWorkbooks() {
   return WORKBOOKS.filter((book) => book.status === "ready");
 }
 
-function groupByDistrict() {
-  return [...new Set(WORKBOOKS.map((book) => book.district))].map((district) => [
-    district,
-    WORKBOOKS.filter((book) => book.district === district),
-  ]);
-}
-
 function getWorkbook(id) {
   return WORKBOOKS.find((book) => book.id === id);
+}
+
+function getArea(id) {
+  return AREAS.find((area) => area.id === id);
+}
+
+function areaWorkbooks(areaId) {
+  const area = getArea(areaId) || AREAS[0];
+  return [...new Set(area.bookIds)].map(getWorkbook).filter(Boolean);
+}
+
+function firstAreaBook(areaId) {
+  return areaWorkbooks(areaId)[0] || WORKBOOKS[0];
+}
+
+function areaForWorkbook(workbookId, preferredAreaId = "") {
+  const preferred = getArea(preferredAreaId);
+  if (preferred?.bookIds?.includes(workbookId)) return preferred;
+  return AREAS.find((area) => area.bookIds.includes(workbookId)) || AREAS[0];
+}
+
+function areaMarker(place, area, index) {
+  if (!area || area.id !== "schoolhouse") return place.marker;
+  const schoolMarkers = [
+    { x: 20, y: 37 },
+    { x: 40, y: 36 },
+    { x: 60, y: 37 },
+    { x: 78, y: 45 },
+    { x: 23, y: 63 },
+    { x: 44, y: 64 },
+    { x: 63, y: 64 },
+    { x: 80, y: 70 },
+    { x: 50, y: 84 },
+  ];
+  return schoolMarkers[index % schoolMarkers.length];
 }
 
 function completedCount(profile) {
@@ -1291,7 +1583,7 @@ function escapeSvg(value) {
 window.addEventListener("load", () => {
   if (hasSharedProfiles()) {
     window.ProfileAPI.onChange?.(() => {
-      view = "town";
+      view = "world";
       drawerOpen = false;
       render();
     });

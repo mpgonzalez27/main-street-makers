@@ -1602,7 +1602,7 @@ textarea {
   }
 }
 
-/* Founder Town v2: town-as-globe interaction */
+/* Founder World: Atlas-style map interaction */
 .brand-button {
   text-align: left;
   color: inherit;
@@ -1735,9 +1735,97 @@ textarea {
   background: #eadcbd;
 }
 
-.mini-town-preview .founder-town-map {
+.founder-world-map {
+  width: 100%;
+  height: min(74dvh, 48rem);
+  min-height: 35rem;
+  border-radius: var(--radius-lg);
+  background: #eadcbd;
+}
+
+.mini-town-preview .founder-town-map,
+.mini-town-preview .founder-world-map {
   height: auto;
   min-height: 0;
+}
+
+.world-stage {
+  background:
+    radial-gradient(circle at 50% 68%, rgba(215, 168, 74, 0.26), transparent 16rem),
+    radial-gradient(circle at 20% 52%, rgba(94, 127, 163, 0.16), transparent 18rem),
+    radial-gradient(circle at 78% 31%, rgba(110, 85, 126, 0.14), transparent 15rem),
+    #eadcbd;
+}
+
+.world-area {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 180ms var(--ease-out),
+    opacity 180ms var(--ease-out);
+}
+
+.world-area:hover,
+.world-area:focus,
+.world-area.active {
+  transform: scale(1.12);
+}
+
+.world-area .area-halo {
+  fill: rgba(255, 248, 232, 0.7);
+  stroke: rgba(36, 26, 18, 0.1);
+  stroke-width: 0.7;
+  filter: drop-shadow(0 1px 1px rgba(36, 26, 18, 0.14));
+}
+
+.world-area .area-core {
+  fill: var(--gold);
+  stroke: #fff8e8;
+  stroke-width: 1.35;
+}
+
+.world-area.area-red .area-core {
+  fill: var(--red);
+}
+
+.world-area.area-blue .area-core {
+  fill: var(--blue);
+}
+
+.world-area.area-green .area-core {
+  fill: var(--ledger);
+}
+
+.world-area.area-purple .area-core {
+  fill: var(--purple);
+}
+
+.world-area.done .area-core {
+  fill: var(--ledger);
+}
+
+.world-area.active .area-halo {
+  stroke: var(--ink);
+  stroke-width: 1.35;
+}
+
+.world-area text {
+  pointer-events: none;
+  font-weight: 900;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: rgba(255, 248, 232, 0.95);
+  stroke-width: 0.7px;
+}
+
+.area-emoji {
+  font-size: 5.2px;
+}
+
+.area-label {
+  font-size: 2.65px;
+  letter-spacing: 0.02em;
 }
 
 .town-pin {
@@ -1877,6 +1965,27 @@ textarea {
   background: rgba(94, 127, 163, 0.16);
 }
 
+.place-icon.area-icon {
+  color: var(--ink);
+  background: rgba(215, 168, 74, 0.24);
+}
+
+.place-icon.area-icon.red {
+  background: rgba(184, 74, 50, 0.16);
+}
+
+.place-icon.area-icon.blue {
+  background: rgba(94, 127, 163, 0.16);
+}
+
+.place-icon.area-icon.green {
+  background: rgba(47, 93, 70, 0.16);
+}
+
+.place-icon.area-icon.purple {
+  background: rgba(110, 85, 126, 0.16);
+}
+
 .place-sheet h2 {
   margin-top: var(--space-1);
   font-family: var(--font-display);
@@ -1898,6 +2007,20 @@ textarea {
 
 .sheet-status-row {
   grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+}
+
+.area-preview-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.area-preview-list span {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid rgba(36, 26, 18, 0.1);
+  border-radius: var(--radius-md);
+  background: rgba(247, 240, 223, 0.6);
+  font-weight: 800;
 }
 
 .reader-shell {
@@ -2048,6 +2171,20 @@ textarea {
   margin-top: var(--space-4);
 }
 
+.library-area-label {
+  margin-top: var(--space-5);
+  padding: var(--space-2) 0;
+  border-bottom: 2px solid rgba(36, 26, 18, 0.16);
+  color: var(--chalk);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.library-area-label:first-child {
+  margin-top: 0;
+}
+
 .library-row {
   display: grid;
   grid-template-columns: 2rem minmax(0, 1fr) auto;
@@ -2171,7 +2308,13 @@ textarea {
     min-height: 31rem;
   }
 
-  .town-pin .pin-label {
+  .founder-world-map {
+    height: 62dvh;
+    min-height: 31rem;
+  }
+
+  .town-pin .pin-label,
+  .world-area .area-label {
     display: none;
   }
 
@@ -2188,8 +2331,8 @@ textarea {
   }
 
   .place-sheet {
-    position: sticky;
-    bottom: var(--space-2);
+    position: relative;
+    bottom: auto;
     z-index: 20;
     padding: var(--space-4);
     border-radius: var(--radius-lg);
