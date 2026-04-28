@@ -729,41 +729,79 @@ function renderMissionModal(id) {
 
 function ideaWorkbook(profile, business, mission) {
   const need = profile.notebook.ideaNeed || "";
+  const helper = profile.notebook.ideaHelper || "";
+  const promise = profile.notebook.ideaPromise || "";
+  const parentNote = profile.notebook.ideaParentNote || "";
+  const businessTitle = escapeHtml(business.title);
+  const product = escapeHtml(business.product || "your offer");
+  const type = escapeHtml(business.type || "shop");
+  const needs = [
+    ["thirsty", "A neighbor is thirsty on a warm afternoon.", `${product} can help someone feel refreshed.`],
+    ["gift", "A child needs a small gift for a friend.", `${product} can help someone share kindness.`],
+    ["tidy", "A family needs help keeping something neat.", `${product} can help make a busy day easier.`],
+    ["celebrate", "A family wants something cheerful for a small party.", `${product} can help a day feel special.`],
+  ];
   return `
     <div class="workbook-spread">
-      <section class="feature-page">
+      <section class="feature-page idea-feature">
         <span class="kicker">First Workbook Mission</span>
         <h3 class="feature-headline">A business begins with help.</h3>
-        <p>A business is not just a table, a sign, or a jar of coins. A business helps someone.</p>
-        <p>A lemonade stand helps a thirsty neighbor. A sticker booth helps a friend decorate a notebook. A lawn helper helps a family care for a yard.</p>
-        <p>Your job today is to look for a need. Then your shop can offer a product or service that fits that need.</p>
+        <p class="newspaper-deck">Before a founder makes a sign or counts coins, the founder asks one bright question: <strong>Who can I help?</strong></p>
+        <div class="article-columns">
+          <p>A business is not just a table, a jar, or a box of supplies. A business helps people by offering a product or a service.</p>
+          <p>A product is a thing people can buy. A service is a helpful job someone does.</p>
+          <p>Your ${businessTitle} is a ${type}. It can serve a real need on Main Street.</p>
+        </div>
+        <div class="ledger-definition">
+          <strong>Words to know</strong>
+          <dl>
+            <div><dt>Business</dt><dd>A way to help people with a product or service.</dd></div>
+            <div><dt>Customer</dt><dd>A person who may buy what you offer.</dd></div>
+            <div><dt>Need</dt><dd>Something a person could use help with.</dd></div>
+          </dl>
+        </div>
         <div class="pull-note">Founder rule: Find the need before you count the coins.</div>
       </section>
       <section class="activity-zone">
         <div class="activity-card">
-          <span class="kicker">Activity</span>
-          <h3>Choose a customer need.</h3>
-          <p>Your business is <strong>${escapeHtml(business.title)}</strong>. Which customer need fits best?</p>
-          <div class="choice-list">
-            ${[
-              ["thirsty", "A neighbor is thirsty on a warm afternoon."],
-              ["gift", "A child needs a small gift for a friend."],
-              ["tidy", "A family needs help keeping something tidy."],
-            ]
+          <span class="kicker">Activity 1</span>
+          <h3>Circle the need.</h3>
+          <p>Your business is <strong>${businessTitle}</strong>. Tap one customer need that your offer could help.</p>
+          <div class="choice-list need-cards">
+            ${needs
               .map(
-                ([value, label]) => `
-              <button class="choice-card ${selectedChoice === value || need === label ? "selected" : ""}" data-choice="${value}" data-choice-label="${label}" data-testid="button-need-${value}">
-                ${label}
+                ([value, label, hint]) => `
+              <button class="choice-card need-card ${selectedChoice === value || need === label ? "selected" : ""}" data-choice="${value}" data-choice-label="${label}" data-testid="button-need-${value}">
+                <strong>${label}</strong>
+                <span>${hint}</span>
               </button>
             `,
               )
               .join("")}
           </div>
         </div>
-        <label>
-          Founder Notebook
-          <textarea data-notebook-field="ideaNeed" data-testid="textarea-idea-need" placeholder="My business helps people who need...">${escapeHtml(need)}</textarea>
-        </label>
+        <div class="activity-card receipt-card">
+          <span class="kicker">Activity 2</span>
+          <h3>Write your founder sentence.</h3>
+          <p>Use short, clear words. A grown-up can help with spelling.</p>
+          <label>
+            Customer I can help
+            <textarea data-notebook-field="ideaHelper" data-testid="textarea-idea-helper" placeholder="I can help a neighbor, friend, family, or visitor...">${escapeHtml(helper)}</textarea>
+          </label>
+          <label>
+            Founder promise
+            <textarea data-notebook-field="ideaPromise" data-testid="textarea-idea-promise" placeholder="My shop helps by...">${escapeHtml(promise)}</textarea>
+          </label>
+        </div>
+        <div class="activity-card parent-mini-guide">
+          <span class="kicker">Parent Guide</span>
+          <h3>Teach it in 3 minutes.</h3>
+          <p>Ask: “Who has a need? How does this shop help? Is the offer a thing, a helpful job, or both?”</p>
+          <label>
+            Parent or learner note
+            <textarea data-notebook-field="ideaParentNote" data-testid="textarea-idea-parent-note" placeholder="One thing we talked about was...">${escapeHtml(parentNote)}</textarea>
+          </label>
+        </div>
       </section>
     </div>
   `;
@@ -947,6 +985,7 @@ function grandActivity(profile) {
 function renderNotebook() {
   const profile = activeProfile();
   const business = currentBusiness(profile) || { title: "Not chosen yet", type: "Not chosen", product: "Not chosen" };
+  const notebookEntries = Object.entries(profile.notebook).filter(([, value]) => String(value || "").trim());
   return `
     <main class="screen">
       <div class="screen-header">
@@ -993,13 +1032,32 @@ function renderNotebook() {
         </div>
         <h2 style="margin-top: var(--space-6)">Saved Mission Answers</h2>
         <div class="ledger-list">
-          ${Object.keys(profile.notebook).length ? Object.entries(profile.notebook).map(([key, value]) => `<div class="notebook-entry"><strong>${escapeHtml(titleCase(key.replace(/Need$/, " Need")))}</strong><p>${escapeHtml(value)}</p></div>`).join("") : `<div class="empty-note">Mission answers will appear here as the learner writes.</div>`}
+          ${notebookEntries.length ? notebookEntries.map(([key, value]) => `<div class="notebook-entry"><strong>${escapeHtml(notebookLabel(key))}</strong><p>${escapeHtml(value)}</p></div>`).join("") : `<div class="empty-note">Mission answers will appear here as the learner writes.</div>`}
         </div>
         <h2 style="margin-top: var(--space-6)">Big Map Progress</h2>
         ${growthSteps(profile)}
       </section>
     </main>
   `;
+}
+
+function notebookLabel(key) {
+  const labels = {
+    ideaNeed: "Idea Bench: Customer Need",
+    ideaHelper: "Idea Bench: Customer I Can Help",
+    ideaPromise: "Idea Bench: Founder Promise",
+    ideaParentNote: "Idea Bench: Parent or Learner Note",
+    workshop: "Garage Workshop",
+    supply: "Supply Store",
+    sign: "Sign Shop",
+    market: "Market Booth",
+    price: "Price Post",
+    money: "Money Notebook",
+    town: "Town Hall",
+    bank: "Bank Barn",
+    grand: "Grand Opening Street",
+  };
+  return labels[key] || titleCase(key.replace(/Need$/, " Need"));
 }
 
 function renderParentGuide() {

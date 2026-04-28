@@ -889,6 +889,72 @@ textarea {
   font-weight: 800;
 }
 
+.idea-feature {
+  min-height: 30rem;
+}
+
+.newspaper-deck {
+  margin-bottom: var(--space-4);
+  font-size: var(--text-lg);
+  line-height: 1.28;
+  color: var(--red);
+  font-weight: 800;
+}
+
+.article-columns {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 680px) {
+  .article-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .article-columns p:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.ledger-definition {
+  margin-top: var(--space-4);
+  border: 2px solid rgba(36, 26, 18, 0.16);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(rgba(255, 249, 235, 0.86), rgba(255, 249, 235, 0.86)),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 1.35rem,
+      rgba(94, 127, 163, 0.12) 1.35rem,
+      rgba(94, 127, 163, 0.12) 1.43rem
+    );
+  padding: var(--space-4);
+  box-shadow: inset 0 0 0 3px rgba(215, 168, 74, 0.08);
+}
+
+.ledger-definition dl {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.ledger-definition div {
+  display: grid;
+  gap: var(--space-1);
+  border-top: 1px dashed rgba(36, 26, 18, 0.22);
+  padding-top: var(--space-2);
+}
+
+.ledger-definition dt {
+  color: var(--chalk);
+  font-weight: 900;
+}
+
+.ledger-definition dd {
+  color: rgba(36, 26, 18, 0.82);
+}
+
 .activity-zone {
   display: grid;
   gap: var(--space-3);
@@ -910,6 +976,33 @@ textarea {
 .choice-card.selected {
   border-color: var(--ledger);
   background: rgba(47, 93, 70, 0.13);
+}
+
+.need-card {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.need-card span {
+  color: rgba(36, 26, 18, 0.72);
+  font-weight: 700;
+}
+
+.receipt-card {
+  background:
+    linear-gradient(rgba(255, 249, 235, 0.88), rgba(255, 249, 235, 0.88)),
+    repeating-linear-gradient(
+      0deg,
+      rgba(36, 26, 18, 0.08) 0,
+      rgba(36, 26, 18, 0.08) 1px,
+      transparent 1px,
+      transparent 1.15rem
+    );
+}
+
+.parent-mini-guide {
+  border-color: rgba(110, 85, 126, 0.28);
+  background: rgba(110, 85, 126, 0.08);
 }
 
 .choice-card.correct {
