@@ -1093,6 +1093,62 @@ textarea {
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     max-height: 94dvh;
   }
+
+  .map-illustration {
+    min-height: 76rem;
+  }
+
+  .map-building {
+    width: 7.15rem;
+    min-height: 5.85rem;
+    padding-inline: var(--space-2);
+  }
+
+  .map-building span {
+    font-size: 0.86rem;
+    line-height: 1.15;
+  }
+
+  .position-0 {
+    left: 8%;
+    bottom: 3%;
+  }
+  .position-1 {
+    right: 6%;
+    bottom: 13%;
+  }
+  .position-2 {
+    left: 7%;
+    bottom: 23%;
+  }
+  .position-3 {
+    right: 6%;
+    bottom: 33%;
+  }
+  .position-4 {
+    left: 7%;
+    bottom: 43%;
+  }
+  .position-5 {
+    right: 6%;
+    bottom: 53%;
+  }
+  .position-6 {
+    left: 7%;
+    bottom: 63%;
+  }
+  .position-7 {
+    right: 6%;
+    bottom: 73%;
+  }
+  .position-8 {
+    left: 7%;
+    top: 7%;
+  }
+  .position-9 {
+    right: 6%;
+    top: 1.5%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
