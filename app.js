@@ -52,18 +52,18 @@ const DISTRICTS = [
     blurb: "Test the idea before spending too much time or money.",
   },
   {
-    id: "setup",
-    name: "The Grown-Up Setup Desk",
-    icon: "🏛️",
-    sign: "Setup Desk",
-    blurb: "Learn the grown-up paperwork words without giving legal advice.",
-  },
-  {
     id: "records",
     name: "The Record Book",
     icon: "📒",
     sign: "Record Book",
     blurb: "Track money, receipts, budgets, and what worked.",
+  },
+  {
+    id: "setup",
+    name: "The Grown-Up Setup Desk",
+    icon: "🏛️",
+    sign: "Setup Desk",
+    blurb: "Learn the grown-up paperwork words without giving legal advice.",
   },
 ];
 
@@ -620,25 +620,18 @@ function renderWelcome() {
   const profile = activeProfile();
   const learnerLine = profile ? `Welcome back, ${escapeHtml(profile.name)}.` : "Choose a learner to begin.";
   return `
-    <main class="hero">
-      <section class="hero-card">
+    <main class="hero simple-hero">
+      <section class="hero-card simple-cover">
         <span class="kicker">Small Town Business · Main Street Press</span>
         <h1>Business Basics Atlas</h1>
-        <p class="hero-copy">${learnerLine} Explore a cozy Main Street map and learn how real businesses work, one short chapter at a time.</p>
+        <p class="hero-copy">${learnerLine} Learn how business works in 12 short chapters.</p>
         <div class="hero-actions">
           <button class="primary-button" data-action="start" data-testid="button-start">Start Learning</button>
-          <button class="secondary-button" data-action="profiles" data-testid="button-profiles">Choose Learner</button>
           <button class="secondary-button" data-action="parent" data-testid="button-parent-welcome">Parent Guide</button>
         </div>
         <div class="pull-note">
           This is not legal, tax, payroll, or accounting advice. It is a child-friendly map of business ideas for parent-guided learning.
         </div>
-      </section>
-      <section class="town-preview" aria-label="Illustrated Main Street preview">
-        <div class="preview-building b1"><span>IDEA</span></div>
-        <div class="preview-building b2"><span>PLAN</span></div>
-        <div class="preview-building b3"><span>RECORD</span></div>
-        <div class="coin-stack" aria-hidden="true"><div class="coin">?</div><div class="coin">✓</div><div class="coin">✎</div></div>
       </section>
     </main>
   `;
@@ -764,42 +757,38 @@ function renderCreator() {
 function renderAtlas() {
   const profile = activeProfile();
   const business = currentBusiness(profile);
-  const active = selectedDistrict || "idea";
   return `
-    <main class="screen">
-      <section class="screen-header">
+    <main class="screen simple-atlas">
+      <section class="screen-header atlas-header">
         <div>
           <span class="kicker">Business Basics Atlas</span>
-          <h1>${escapeHtml(business.title)} Main Street</h1>
-          <p>Choose a district, then open a chapter. No coins. No locked levels. Just a clear map of how business works.</p>
-          <div class="button-row atlas-tools">
-            <button class="secondary-button" data-action="notebook" data-testid="button-notebook">Founder Notebook</button>
-            <button class="secondary-button" data-action="parent" data-testid="button-parent">Parent Guide</button>
-            <button class="secondary-button" data-action="sources" data-testid="button-sources">Sources</button>
-            <button class="secondary-button" data-action="business" data-testid="button-change-business">Change Business</button>
+          <h1>Business Basics</h1>
+          <p>Read in order, or open the chapter you need. Your example business is <strong>${escapeHtml(business.title)}</strong>.</p>
+          <div class="atlas-link-row">
+            <button class="link-button" data-action="notebook" data-testid="button-notebook">Founder Notebook</button>
+            <button class="link-button" data-action="parent" data-testid="button-parent">Parent Guide</button>
+            <button class="link-button" data-action="sources" data-testid="button-sources">Sources</button>
+            <button class="link-button" data-action="business" data-testid="button-change-business">Change business</button>
           </div>
         </div>
         ${statusStrip(profile)}
       </section>
-      <section class="atlas-layout">
-        <div class="town-map-card">
-          <div class="district-road" aria-hidden="true"></div>
-          ${DISTRICTS.map((district, index) => `
-            <button class="district-card district-${index} ${active === district.id ? "selected" : ""}" data-district="${district.id}" data-testid="button-district-${district.id}">
-              <span class="district-icon">${district.icon}</span>
-              <strong>${district.sign}</strong>
-              <small>${district.name}</small>
-            </button>
-          `).join("")}
-        </div>
-        <aside class="panel">
-          <span class="kicker">${escapeHtml(getDistrict(active).name)}</span>
-          <h2>${escapeHtml(getDistrict(active).sign)}</h2>
-          <p>${escapeHtml(getDistrict(active).blurb)}</p>
-          <div class="chapter-list">
-            ${chaptersFor(active).map((chapter) => chapterCard(profile, chapter)).join("")}
-          </div>
-        </aside>
+      <section class="contents-page">
+        ${DISTRICTS.map((district) => `
+          <article class="contents-section">
+            <header class="contents-section__header">
+              <span class="section-icon">${district.icon}</span>
+              <div>
+                <span class="kicker">${escapeHtml(district.name)}</span>
+                <h2>${escapeHtml(district.sign)}</h2>
+                <p>${escapeHtml(district.blurb)}</p>
+              </div>
+            </header>
+            <div class="chapter-list">
+              ${chaptersFor(district.id).map((chapter) => chapterCard(profile, chapter)).join("")}
+            </div>
+          </article>
+        `).join("")}
       </section>
     </main>
   `;
