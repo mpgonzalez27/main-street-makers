@@ -1179,6 +1179,14 @@ function wireEvents() {
   };
 }
 
+if (hasSharedProfiles()) {
+  window.ProfileAPI.onChange?.(() => {
+    closeMission(false);
+    view = activeProfile()?.selectedBusiness ? "map" : "business";
+    render();
+  });
+}
+
 function handleAction(event) {
   const action = event.currentTarget.dataset.action;
   if (action === "profiles") view = "profiles";

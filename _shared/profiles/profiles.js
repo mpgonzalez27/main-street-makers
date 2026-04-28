@@ -253,12 +253,6 @@
         wrap.classList.add("is-closing");
         setTimeout(() => {
           wrap.remove();
-          // If first-launch, reload so every module re-reads storage under new namespace.
-          if (!allowClose) {
-            try { window.location.reload(); } catch (_) {}
-          } else {
-            try { window.location.reload(); } catch (_) {}
-          }
         }, 220);
       });
       grid.appendChild(btn);
