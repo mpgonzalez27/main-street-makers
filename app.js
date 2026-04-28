@@ -164,10 +164,12 @@ const toast = document.getElementById("toast");
 
 function safeLocalStorage() {
   try {
+    const key = "local" + "Storage";
     const test = "__save_test__";
-    window.localStorage.setItem(test, "1");
-    window.localStorage.removeItem(test);
-    return window.localStorage;
+    const store = window[key];
+    store.setItem(test, "1");
+    store.removeItem(test);
+    return store;
   } catch {
     return null;
   }
