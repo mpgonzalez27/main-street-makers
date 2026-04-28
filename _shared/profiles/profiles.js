@@ -226,14 +226,14 @@
     const title = document.createElement("h2");
     title.id = "save-profile-picker-title";
     title.className = "save-profile-picker__title";
-    title.textContent = allowClose ? "Switch Explorer" : "Who's exploring today?";
+    title.textContent = allowClose ? "Switch Learner" : "Who's learning today?";
     card.appendChild(title);
 
     const sub = document.createElement("p");
     sub.className = "save-profile-picker__sub";
     sub.textContent = allowClose
-      ? "Tap your face to switch. Each explorer has her own coins, passport, and badges."
-      : "Tap your face to start. Your stuff stays yours — coins, passport, badges, all of it.";
+      ? "Tap your face to switch. Each learner has her own Founder Notebook and chapter progress."
+      : "Tap your face to start. Your Founder Notebook and chapter progress stay with you.";
     card.appendChild(sub);
 
     const grid = document.createElement("div");
