@@ -1,4 +1,5 @@
-const STORAGE_KEY = "save.mainStreetMakers.v1";
+const STORAGE_KEY = "msm_progress_v1";
+const LEGACY_STORAGE_KEY = "save.mainStreetMakers.v1";
 const SAFE_ICONS = ["🍋", "🐾", "🎨", "🍪", "🧵", "🌱", "📚", "💌", "🧺", "🪴"];
 const DEFAULT_PROFILE_NAME = "Founder";
 
@@ -176,15 +177,10 @@ function safeLocalStorage() {
 }
 
 function loadRootState() {
-  if (window.ProfileAPI && window.SaveStore) {
-    try {
-      const shared = window.SaveStore.get?.(STORAGE_KEY);
-      if (shared) return normalizeRoot(shared);
-    } catch {}
-  }
+  if (hasSharedProfiles()) return normalizeRoot(DEFAULT_STATE);
   const storage = safeLocalStorage();
   if (storage) {
-    const raw = storage.getItem(STORAGE_KEY);
+    const raw = storage.getItem(LEGACY_STORAGE_KEY);
     if (raw) {
       try {
         return normalizeRoot(JSON.parse(raw));
@@ -198,15 +194,10 @@ function loadRootState() {
 function saveRootState() {
   const clean = normalizeRoot(appState);
   appState = clean;
-  if (window.ProfileAPI && window.SaveStore) {
-    try {
-      window.SaveStore.set?.(STORAGE_KEY, clean);
-      return;
-    } catch {}
-  }
+  if (hasSharedProfiles()) return;
   const storage = safeLocalStorage();
   if (storage) {
-    storage.setItem(STORAGE_KEY, JSON.stringify(clean));
+    storage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(clean));
     return;
   }
   memoryStore = clean;
@@ -225,6 +216,76 @@ function normalizeRoot(root) {
   return next;
 }
 
+function hasSharedProfiles() {
+  return !!(window.ProfileAPI && window.SaveStore && window.SaveStore.getItem && window.SaveStore.setItem);
+}
+
+function sharedProfileBase() {
+  if (!hasSharedProfiles()) return null;
+  const profile = window.ProfileAPI.getActive?.();
+  if (!profile) return null;
+  return {
+    id: profile.id || "guest",
+    name: profile.displayName || profile.name || DEFAULT_PROFILE_NAME,
+    displayName: profile.displayName || profile.name || DEFAULT_PROFILE_NAME,
+    avatar: profile.avatar || "",
+    accent: profile.accent || "#2F5D46",
+  };
+}
+
+function loadSharedProgress(base) {
+  if (!base) return null;
+  let progress = {};
+  try {
+    const raw = window.SaveStore.getItem(STORAGE_KEY);
+    if (raw) progress = JSON.parse(raw) || {};
+  } catch {}
+  if (!Object.keys(progress).length) {
+    progress = migrateLegacyProgress(base) || {};
+  }
+  return normalizeProfile({ ...progress, id: base.id, name: base.name }, base.id);
+}
+
+function saveSharedProgress(profile) {
+  if (!hasSharedProfiles() || !profile) return;
+  const progress = {
+    selectedBusiness: profile.selectedBusiness || "",
+    customBusiness: profile.customBusiness || {},
+    coins: Math.max(0, Number(profile.coins) || 0),
+    unlockedBuildings: profile.unlockedBuildings || ["idea"],
+    completedBuildings: profile.completedBuildings || [],
+    badges: profile.badges || [],
+    notebook: profile.notebook || {},
+    townUpgrades: profile.townUpgrades || [],
+    businessName: profile.businessName || "",
+    slogan: profile.slogan || "",
+    signColor: profile.signColor || "#B84A32",
+  };
+  try {
+    window.SaveStore.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch {}
+}
+
+function migrateLegacyProgress(base) {
+  const storage = safeLocalStorage();
+  if (!storage) return null;
+  try {
+    const raw = storage.getItem(LEGACY_STORAGE_KEY);
+    if (!raw) return null;
+    const legacy = JSON.parse(raw);
+    const profiles = Object.values(legacy?.profiles || {});
+    const byName = profiles.find((p) => cleanName(p.name).toLowerCase() === cleanName(base.name).toLowerCase());
+    const byActive = legacy?.activeProfileId ? legacy.profiles?.[legacy.activeProfileId] : null;
+    const picked = byName || byActive || null;
+    if (!picked) return null;
+    const migrated = normalizeProfile({ ...picked, id: base.id, name: base.name }, base.id);
+    saveSharedProgress(migrated);
+    return migrated;
+  } catch {
+    return null;
+  }
+}
+
 function structuredCloneSafe(obj) {
   try {
     return structuredClone(obj);
@@ -234,6 +295,10 @@ function structuredCloneSafe(obj) {
 }
 
 function createProfile(name) {
+  if (hasSharedProfiles()) {
+    window.ProfileAPI.openPicker?.({ allowClose: true });
+    return activeProfile();
+  }
   const id = "profile-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
   appState.profiles[id] = normalizeProfile({ name: cleanName(name) }, id);
   appState.activeProfileId = id;
@@ -266,11 +331,17 @@ function cleanName(value) {
 }
 
 function activeProfile() {
+  const base = sharedProfileBase();
+  if (base) return loadSharedProgress(base);
   if (!appState.activeProfileId || !appState.profiles[appState.activeProfileId]) return null;
   return appState.profiles[appState.activeProfileId];
 }
 
 function setProfile(profile) {
+  if (hasSharedProfiles()) {
+    saveSharedProgress(profile);
+    return;
+  }
   appState.profiles[profile.id] = normalizeProfile(profile, profile.id);
   saveRootState();
 }
@@ -380,6 +451,7 @@ function renderWelcome() {
 }
 
 function renderProfiles() {
+  if (hasSharedProfiles()) return renderSharedProfiles();
   const profiles = Object.values(appState.profiles);
   return `
     <main class="screen">
@@ -413,6 +485,54 @@ function renderProfiles() {
           </label>
           <button class="primary-button" type="submit" data-testid="button-add-profile">Add or switch learner</button>
         </form>
+      </section>
+    </main>
+  `;
+}
+
+function renderSharedProfiles() {
+  const profiles = window.ProfileAPI.list?.() || [];
+  const active = window.ProfileAPI.getActive?.();
+  return `
+    <main class="screen">
+      <div class="screen-header">
+        <div>
+          <span class="kicker">Shared SAVE Profiles</span>
+          <h1>Who is building today?</h1>
+          <p>This uses the same learner database as Expedition Atlas and Animal Kingdom. The active learner is shared across hubs, while Main Street progress stays separate.</p>
+        </div>
+        <button class="secondary-button" data-action="welcome" data-testid="button-back-welcome">Back</button>
+      </div>
+      <section class="panel">
+        <div class="grid business-grid">
+          ${profiles
+            .map(
+              (profile) => {
+                const progress = loadSharedProgress({
+                  id: profile.id,
+                  name: profile.displayName || profile.name || DEFAULT_PROFILE_NAME,
+                  displayName: profile.displayName || profile.name || DEFAULT_PROFILE_NAME,
+                  avatar: profile.avatar || "",
+                  accent: profile.accent || "#2F5D46",
+                });
+                const selected = active?.id === profile.id;
+                return `
+                  <button class="business-card" data-shared-profile-id="${profile.id}" data-testid="button-shared-profile-${profile.id}">
+                    <div class="business-icon">${selected ? "✓" : "👤"}</div>
+                    <h3>${escapeHtml(profile.displayName || profile.name)}</h3>
+                    <p>${selected ? "Active learner" : "Switch to this learner"}</p>
+                    <div class="ledger-row"><span>Main Street badges</span><strong>${progress.badges.length}</strong></div>
+                    <div class="ledger-row"><span>Main Street coins</span><strong>${progress.coins}</strong></div>
+                  </button>
+                `;
+              },
+            )
+            .join("")}
+        </div>
+        <div class="button-row">
+          <button class="primary-button" data-action="open-shared-picker" data-testid="button-open-shared-picker">Open Atlas-style picker</button>
+          <button class="secondary-button" data-action="start" data-testid="button-profile-continue">Continue</button>
+        </div>
       </section>
     </main>
   `;
@@ -962,6 +1082,13 @@ function wireEvents() {
       render();
     };
   });
+  document.querySelectorAll("[data-shared-profile-id]").forEach((button) => {
+    button.onclick = () => {
+      window.ProfileAPI.setActive?.(button.dataset.sharedProfileId);
+      view = activeProfile()?.selectedBusiness ? "map" : "business";
+      render();
+    };
+  });
   document.querySelectorAll("[data-business]").forEach((button) => {
     button.onclick = () => {
       const profile = activeProfile();
@@ -1055,6 +1182,10 @@ function wireEvents() {
 function handleAction(event) {
   const action = event.currentTarget.dataset.action;
   if (action === "profiles") view = "profiles";
+  if (action === "open-shared-picker") {
+    window.ProfileAPI?.openPicker?.({ allowClose: true });
+    return;
+  }
   if (action === "welcome") view = "welcome";
   if (action === "business") view = "business";
   if (action === "creator") view = "creator";

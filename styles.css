@@ -104,6 +104,12 @@ svg {
   transform: translateY(0);
 }
 
+/* Main Street Makers has its own profile button in the app header.
+   Keep the shared database and picker, but avoid a duplicate floating chip. */
+#save-profile-chip {
+  display: none !important;
+}
+
 .app-shell {
   min-height: 100dvh;
   width: min(100%, 1220px);
