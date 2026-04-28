@@ -1,340 +1,33 @@
-const STORAGE_KEY = "msm_business_basics_atlas_v2";
-const LEGACY_STORAGE_KEY = "save.mainStreetMakers.v1";
+const STORAGE_KEY = "save_founder_town_v1";
+const LEGACY_STORAGE_KEY = "msm_business_basics_atlas_v2";
+const LOCAL_ROOT_KEY = "save.founderTown.localProfiles.v1";
 const DEFAULT_PROFILE_NAME = "Founder";
-const SAFE_ICONS = ["🍋", "🐾", "🎨", "🍪", "🧵", "🌱", "📚", "💌", "🧺", "🪴"];
-
-const PRESET_BUSINESSES = [
-  {
-    id: "lemonade",
-    title: "Lemonade Stand",
-    type: "Drink stand",
-    product: "Cold lemonade",
-    icon: "🍋",
-    price: 2,
-    supplies: ["lemons", "cups", "ice"],
-    blurb: "A sunny first example for learning business basics.",
-  },
-  {
-    id: "pet-treat",
-    title: "Pet Treat Cart",
-    type: "Treat cart",
-    product: "Pet treats",
-    icon: "🐾",
-    price: 3,
-    supplies: ["oats", "bags", "labels"],
-    blurb: "A neighborly cart for serving families with pets.",
-  },
-  {
-    id: "art-sticker",
-    title: "Art & Sticker Booth",
-    type: "Art booth",
-    product: "Handmade stickers",
-    icon: "🎨",
-    price: 1,
-    supplies: ["paper", "markers", "sticker sheets"],
-    blurb: "A creative booth for learning customers, price, and records.",
-  },
-];
-
-const DISTRICTS = [
-  {
-    id: "idea",
-    name: "The Big Idea",
-    icon: "💡",
-    sign: "Idea Shop",
-    blurb: "What is a business, and who does it help?",
-  },
-  {
-    id: "plan",
-    name: "The Founder’s Plan",
-    icon: "📝",
-    sign: "Planning Office",
-    blurb: "Test the idea before spending too much time or money.",
-  },
-  {
-    id: "records",
-    name: "The Record Book",
-    icon: "📒",
-    sign: "Record Book",
-    blurb: "Track money, receipts, budgets, and what worked.",
-  },
-  {
-    id: "setup",
-    name: "The Grown-Up Setup Desk",
-    icon: "🏛️",
-    sign: "Setup Desk",
-    blurb: "Learn the grown-up paperwork words without giving legal advice.",
-  },
-];
-
-const CHAPTERS = [
-  {
-    id: "business",
-    district: "idea",
-    number: 1,
-    title: "What Is a Business?",
-    icon: "🏪",
-    bigQuestion: "How does a business help people?",
-    grownWord: "Business",
-    wordMeaning: "A way to help people with a product or service.",
-    reading: [
-      "A business begins with help. A person sees a need and offers a useful answer.",
-      "A lemonade stand helps thirsty neighbors. A bookmark shop helps readers keep their place. A lawn helper helps a family care for a yard.",
-      "Money matters, but it is not the first idea. The first idea is service. A good founder asks, “Who can I help?”",
-    ],
-    kidExample: "Your shop can be small and still teach a big idea: notice a need, offer help, and keep your promise.",
-    tryIt: "Point to one person your business could help today.",
-    prompt: "My business helps people who need...",
-    parentNote: "Start with service. This keeps business from feeling like only buying and selling.",
-    sourceIds: ["sba-plan"],
-  },
-  {
-    id: "offer",
-    district: "idea",
-    number: 2,
-    title: "Product or Service?",
-    icon: "🧰",
-    bigQuestion: "Is the business selling a thing, a helpful job, or both?",
-    grownWord: "Product and service",
-    wordMeaning: "A product is a thing people buy. A service is a helpful job.",
-    reading: [
-      "Some businesses sell products. A cookie cart sells cookies. A sticker booth sells stickers.",
-      "Some businesses sell services. A lawn helper does a helpful job. A party helper sets up tables or carries supplies.",
-      "Some businesses do both. A garden stand may sell flowers and also help plant them.",
-    ],
-    kidExample: "A bracelet booth sells a product. A bracelet class is a service. A booth that sells bracelets and teaches a tiny class does both.",
-    tryIt: "Sort your business idea into product, service, or both.",
-    prompt: "My offer is a product, service, or both because...",
-    parentNote: "This chapter introduces a basic business model distinction in child-sized language.",
-    sourceIds: ["sba-plan"],
-  },
-  {
-    id: "customer",
-    district: "idea",
-    number: 3,
-    title: "Who Is the Customer?",
-    icon: "👥",
-    bigQuestion: "Who might want or need this offer?",
-    grownWord: "Customer",
-    wordMeaning: "A person who may buy or use what a business offers.",
-    reading: [
-      "A customer is not just “anybody.” A customer is a person with a need your business can serve.",
-      "A pet treat cart serves families with pets. A bookmark shop serves readers. A birthday card table serves people who want to cheer someone up.",
-      "Good founders learn about customers before they make a big plan.",
-    ],
-    kidExample: "If you sell lemonade, your best customer may be someone walking outside on a warm day.",
-    tryIt: "Name three kinds of people who might want your offer.",
-    prompt: "Three customers who might like my business are...",
-    parentNote: "The SBA describes market research as a way to find customers and understand demand before starting.",
-    sourceIds: ["sba-market"],
-  },
-  {
-    id: "sense",
-    district: "plan",
-    number: 4,
-    title: "Does the Idea Make Sense?",
-    icon: "🔎",
-    bigQuestion: "How can a founder check an idea before building it?",
-    grownWord: "Market research",
-    wordMeaning: "Learning what customers need before you start.",
-    reading: [
-      "A founder does not need to guess everything. A founder can ask kind questions and notice what people choose.",
-      "Will people want this? Are there already many similar choices? What price feels fair? These questions help an idea become clearer.",
-      "Testing first can save time, supplies, and disappointment.",
-    ],
-    kidExample: "Before making twenty bookmarks, ask three readers which animal, color, or verse style they would choose.",
-    tryIt: "Write one question you could ask a possible customer.",
-    prompt: "One kind question I can ask a possible customer is...",
-    parentNote: "The SBA recommends looking at demand, market size, location, saturation, and pricing when researching a market.",
-    sourceIds: ["sba-market"],
-  },
-  {
-    id: "test",
-    district: "plan",
-    number: 5,
-    title: "How Do You Test an Idea?",
-    icon: "🧪",
-    bigQuestion: "What is a tiny safe test?",
-    grownWord: "Test market",
-    wordMeaning: "A small way to learn if people may want the offer.",
-    reading: [
-      "A test is a small try. It helps a founder learn before making a big batch.",
-      "A cookie cart could test three cookie flavors with family. A card table could show three card designs and ask which one is clearest.",
-      "A test should be simple, kind, and safe. The goal is to learn.",
-    ],
-    kidExample: "Make one sample sign before making ten signs. Ask, “Can you tell what I sell?”",
-    tryIt: "Choose a tiny test your business could do this week.",
-    prompt: "My tiny test will be...",
-    parentNote: "Direct research can include surveys, questionnaires, focus groups, or interviews. For a child, keep it informal and parent-guided.",
-    sourceIds: ["sba-market"],
-  },
-  {
-    id: "cost",
-    district: "plan",
-    number: 6,
-    title: "What Does It Cost to Start?",
-    icon: "📦",
-    bigQuestion: "What supplies or tools are needed first?",
-    grownWord: "Startup cost",
-    wordMeaning: "Money or supplies needed before a business can begin.",
-    reading: [
-      "Many businesses need supplies before they can serve a customer.",
-      "A lemonade stand may need lemons, cups, ice, and a sign. A sticker booth may need paper, markers, and sticker sheets.",
-      "A careful founder starts small. The first plan does not need every fancy thing.",
-    ],
-    kidExample: "A starter bundle is better than a too-big bundle if you are still learning.",
-    tryIt: "Choose the three most important supplies for your first day.",
-    prompt: "My three starter supplies are...",
-    parentNote: "A business plan often includes cost structure and key resources. Keep this at the level of estimating needed supplies.",
-    sourceIds: ["sba-business-plan"],
-  },
-  {
-    id: "price",
-    district: "plan",
-    number: 7,
-    title: "What Price Makes Sense?",
-    icon: "🏷️",
-    bigQuestion: "How can a price be fair to the customer and the business?",
-    grownWord: "Pricing",
-    wordMeaning: "Choosing what customers pay for a product or service.",
-    reading: [
-      "A price is a promise. It tells the customer what the business asks in return for the offer.",
-      "A price that is too low may not cover the work. A price that is too high may make customers walk away.",
-      "A fair price thinks about supplies, time, quality, and what customers expect.",
-    ],
-    kidExample: "If lemonade supplies cost money, the price needs to help replace those supplies.",
-    tryIt: "Pick low, fair, or high for your example price and explain why.",
-    prompt: "A fair starting price might be...",
-    parentNote: "The SBA includes pricing among the questions to study when evaluating a market.",
-    sourceIds: ["sba-market"],
-  },
-  {
-    id: "money",
-    district: "records",
-    number: 8,
-    title: "Money In, Money Out, Profit",
-    icon: "🧮",
-    bigQuestion: "What is left after expenses?",
-    grownWord: "Profit",
-    wordMeaning: "What is left after expenses are paid.",
-    reading: [
-      "Revenue is money that comes in. Expenses are money the business spends.",
-      "Profit is what is left after expenses. If 6 coins come in and 3 coins go out, 3 coins are left.",
-      "A founder needs to know all three words: revenue, expenses, and profit.",
-    ],
-    kidExample: "If you sell lemonade for 6 coins and cups and lemons cost 3 coins, the profit is 3 coins.",
-    tryIt: "Solve this: 8 coins in minus 5 coins out equals what?",
-    prompt: "Revenue means... Expenses mean... Profit means...",
-    parentNote: "The IRS recordkeeping page explains that books should show income and expenses. This chapter builds the vocabulary gently.",
-    sourceIds: ["irs-records"],
-  },
-  {
-    id: "records",
-    district: "records",
-    number: 9,
-    title: "Keeping Records",
-    icon: "🧾",
-    bigQuestion: "Why do businesses keep receipts and notes?",
-    grownWord: "Recordkeeping",
-    wordMeaning: "Saving clear notes and papers that show what happened.",
-    reading: [
-      "A record is a clue from the past. It helps a business remember what came in, what went out, and what changed.",
-      "Receipts, invoices, sales slips, and deposit notes can help explain the numbers.",
-      "Good records make it easier for a grown-up to answer business and tax questions later.",
-    ],
-    kidExample: "A receipt can remind you that you bought cups on Monday before the Saturday lemonade stand.",
-    tryIt: "Draw or write one receipt your business might keep.",
-    prompt: "One record my business should keep is...",
-    parentNote: "The IRS says records should support income, expenses, deductions, credits, and tax return entries.",
-    sourceIds: ["irs-records"],
-  },
-  {
-    id: "structure",
-    district: "setup",
-    number: 10,
-    title: "Business Name and Structure",
-    icon: "🏗️",
-    bigQuestion: "Why do grown-ups choose a business type?",
-    grownWord: "Business structure",
-    wordMeaning: "The legal form a business uses, such as sole proprietor, LLC, or corporation.",
-    reading: [
-      "A real business may need a grown-up to choose a structure. That choice affects paperwork, taxes, records, and risk.",
-      "A sole proprietor is one person running a business. An LLC is a business with state paperwork and legal rules. A corporation has more formal company rules.",
-      "Children do not need to choose one here. We are learning the map so the words feel less mysterious.",
-    ],
-    kidExample: "Think of structure like choosing the right kind of folder before filing important papers.",
-    tryIt: "Match each word: sole proprietor, LLC, corporation, to its simple meaning.",
-    prompt: "A business structure matters because...",
-    parentNote: "The SBA says structure affects taxes, ability to raise money, paperwork, and personal liability. This is education only, not advice.",
-    sourceIds: ["sba-structure"],
-  },
-  {
-    id: "ein",
-    district: "setup",
-    number: 11,
-    title: "EIN, State Filing, and Permits",
-    icon: "🗂️",
-    bigQuestion: "What official numbers and papers might a business need?",
-    grownWord: "EIN",
-    wordMeaning: "A federal tax ID number for a business.",
-    reading: [
-      "Some real businesses need official numbers and papers. An EIN is a federal tax ID number for a business.",
-      "Some businesses also register with a state. Some need licenses or permits. The rules can change by place and business type.",
-      "That is why grown-ups check official sources and ask qualified helpers.",
-    ],
-    kidExample: "An EIN is not a prize or badge. It is more like an official label used for business tax records.",
-    tryIt: "Circle the safe answer: ask a grown-up to check official rules.",
-    prompt: "An EIN is used for...",
-    parentNote: "The IRS says EINs are free directly from the IRS. The IRS also says a legal entity should be formed through the state before applying for an EIN.",
-    sourceIds: ["irs-ein", "sba-register"],
-  },
-  {
-    id: "payroll",
-    district: "setup",
-    number: 12,
-    title: "Employees, Payroll, and Grown-Up Help",
-    icon: "👷",
-    bigQuestion: "What changes when a business has workers?",
-    grownWord: "Payroll",
-    wordMeaning: "The system for paying workers and handling required tax records.",
-    reading: [
-      "A tiny pretend shop may only have one learner. A real business can grow and hire workers.",
-      "When workers are involved, grown-ups must handle pay, records, forms, and tax rules carefully.",
-      "A wise founder knows when to ask for help from a parent, accountant, attorney, payroll provider, or official office.",
-    ],
-    kidExample: "If your shop grows from one table to a busy store, the record book becomes even more important.",
-    tryIt: "Name one grown-up helper a business owner might ask for help.",
-    prompt: "A business should ask for grown-up help when...",
-    parentNote: "The IRS says employers must handle worker classification, EINs, withholding, depositing, reporting, paying employment taxes, and records.",
-    sourceIds: ["irs-employees", "irs-records"],
-  },
-];
 
 const SOURCES = {
   "sba-plan": {
     label: "SBA Plan Your Business",
     url: "https://www.sba.gov/business-guide/plan-your-business",
-    note: "Business planning, market research, funding, and startup guidance.",
+    note: "Business planning, market research, startup costs, and growth guidance.",
   },
   "sba-business-plan": {
     label: "SBA Write Your Business Plan",
     url: "https://www.sba.gov/business-guide/plan-your-business/write-your-business-plan",
-    note: "Business plans as roadmaps for structure, running, and growth.",
+    note: "Business plans as roadmaps for structure, operations, and growth.",
   },
   "sba-market": {
     label: "SBA Market Research and Competitive Analysis",
     url: "https://www.sba.gov/business-guide/plan-your-business/market-research-competitive-analysis",
-    note: "Demand, market size, saturation, pricing, direct research, and competition.",
+    note: "Demand, customers, market size, competition, and pricing.",
   },
   "sba-structure": {
     label: "SBA Choose a Business Structure",
     url: "https://www.sba.gov/business-guide/launch-your-business/choose-business-structure",
-    note: "High-level structure differences and why structure matters.",
+    note: "High-level business structure differences and why structure matters.",
   },
   "sba-register": {
     label: "SBA Register Your Business",
     url: "https://www.sba.gov/business-guide/launch-your-business/register-your-business",
-    note: "General registration concepts and state/local variation.",
+    note: "Business registration concepts and state/local variation.",
   },
   "irs-ein": {
     label: "IRS Employer Identification Number",
@@ -353,22 +46,345 @@ const SOURCES = {
   },
 };
 
+const WORKBOOKS = [
+  {
+    id: "idea-bench",
+    number: 1,
+    place: "Idea Bench",
+    workbookTitle: "What Is a Business?",
+    subtitle: "A business begins with helping.",
+    district: "Main Street Basics",
+    status: "ready",
+    icon: "💡",
+    marker: { x: 20, y: 70 },
+    color: "gold",
+    sourceIds: ["sba-plan"],
+    bigQuestion: "How does a business help people?",
+    opening: "A business begins with help. A founder notices a need and offers a useful answer.",
+    sections: [
+      {
+        label: "Read Together",
+        title: "The first idea is service",
+        body: [
+          "A business is a way to serve people with a product or a service.",
+          "A lemonade stand helps thirsty neighbors. A bookmark shop helps readers keep their place. A lawn helper helps a family care for a yard.",
+          "Money matters, but it is not the first idea. The first idea is service. A good founder asks, “Who can I help?”",
+        ],
+      },
+      {
+        label: "Grown-up business word",
+        title: "Business",
+        body: ["A business is a way to help people with a product, a service, or both."],
+      },
+      {
+        label: "Try It",
+        title: "Find a need",
+        body: ["Point to one person your business could help today. What do they need?"],
+      },
+    ],
+    prompt: "My business could help people who need...",
+    parentNote: "Start with service. This keeps business from feeling like only buying and selling.",
+  },
+  {
+    id: "customer-corner",
+    number: 2,
+    place: "Customer Corner",
+    workbookTitle: "Who Is the Customer?",
+    subtitle: "Good founders notice who they can serve.",
+    district: "Main Street Basics",
+    status: "ready",
+    icon: "👥",
+    marker: { x: 39, y: 56 },
+    color: "blue",
+    sourceIds: ["sba-market"],
+    bigQuestion: "Who might want or need this offer?",
+    opening: "A customer is a person with a need your business can serve.",
+    sections: [
+      {
+        label: "Read Together",
+        title: "Customers are not just anybody",
+        body: [
+          "A customer is not just “anybody.” A customer is a person with a need your business can serve.",
+          "A pet treat cart serves families with pets. A bookmark shop serves readers. A birthday card table serves people who want to cheer someone up.",
+          "Good founders learn about customers before they make a big plan.",
+        ],
+      },
+      {
+        label: "Grown-up business word",
+        title: "Market research",
+        body: ["Market research means learning what customers need before you start."],
+      },
+      {
+        label: "Try It",
+        title: "Name three customers",
+        body: ["Write or say three kinds of people who might want your offer."],
+      },
+    ],
+    prompt: "Three customers who might like my business are...",
+    parentNote: "Keep this concrete. Ask, “Who would actually use this?” instead of “Would people like this?”",
+  },
+  {
+    id: "workshop",
+    number: 3,
+    place: "Workshop",
+    workbookTitle: "Product or Service?",
+    subtitle: "Some businesses sell things. Some do helpful jobs.",
+    district: "Main Street Basics",
+    status: "ready",
+    icon: "🧰",
+    marker: { x: 61, y: 64 },
+    color: "green",
+    sourceIds: ["sba-plan"],
+    bigQuestion: "Is the business selling a thing, a helpful job, or both?",
+    opening: "A product is a thing people buy. A service is a helpful job.",
+    sections: [
+      {
+        label: "Read Together",
+        title: "Things and helpful jobs",
+        body: [
+          "Some businesses sell products. A cookie cart sells cookies. A sticker booth sells stickers.",
+          "Some businesses sell services. A lawn helper does a helpful job. A party helper sets up tables or carries supplies.",
+          "Some businesses do both. A garden stand may sell flowers and also help plant them.",
+        ],
+      },
+      {
+        label: "Grown-up business word",
+        title: "Offer",
+        body: ["An offer is what the business gives a customer: a product, a service, or both."],
+      },
+      {
+        label: "Try It",
+        title: "Sort the offer",
+        body: ["Choose product, service, or both for your business idea."],
+      },
+    ],
+    prompt: "My offer is a product, service, or both because...",
+    parentNote: "This chapter introduces the idea of a business model without using heavy vocabulary.",
+  },
+  {
+    id: "supply-store",
+    number: 4,
+    place: "Supply Store",
+    workbookTitle: "What Does It Cost to Start?",
+    subtitle: "Supplies often come before sales.",
+    district: "Planning Desk",
+    status: "ready",
+    icon: "📦",
+    marker: { x: 75, y: 45 },
+    color: "red",
+    sourceIds: ["sba-business-plan"],
+    bigQuestion: "What supplies or tools are needed first?",
+    opening: "Many businesses need supplies before they can serve a customer.",
+    sections: [
+      {
+        label: "Read Together",
+        title: "Start small and count the cost",
+        body: [
+          "A lemonade stand may need lemons, cups, ice, and a sign. A sticker booth may need paper, markers, and sticker sheets.",
+          "A careful founder starts small. The first plan does not need every fancy thing.",
+          "Startup costs are the supplies or tools needed before a business can begin.",
+        ],
+      },
+      {
+        label: "Grown-up business word",
+        title: "Startup cost",
+        body: ["A startup cost is money spent before the business is ready to sell."],
+      },
+      {
+        label: "Try It",
+        title: "Pick three supplies",
+        body: ["Choose the three most important supplies for a first test day."],
+      },
+    ],
+    prompt: "My three starter supplies are...",
+    parentNote: "Help the child separate needs from nice-to-haves. Keep the numbers simple.",
+  },
+  {
+    id: "money-notebook",
+    number: 5,
+    place: "Money Notebook",
+    workbookTitle: "Money In, Money Out, Profit",
+    subtitle: "A founder keeps track of what changed.",
+    district: "Money Office",
+    status: "ready",
+    icon: "🧮",
+    marker: { x: 52, y: 31 },
+    color: "purple",
+    sourceIds: ["irs-records"],
+    bigQuestion: "What is left after expenses?",
+    opening: "Revenue is money that comes in. Expenses are money the business spends.",
+    sections: [
+      {
+        label: "Read Together",
+        title: "The simple profit sentence",
+        body: [
+          "Revenue is money that comes in. Expenses are money the business spends.",
+          "Profit is what is left after expenses. If 6 coins come in and 3 coins go out, 3 coins are left.",
+          "A founder needs to know all three words: revenue, expenses, and profit.",
+        ],
+      },
+      {
+        label: "Grown-up business word",
+        title: "Profit",
+        body: ["Profit is what is left after expenses are paid."],
+      },
+      {
+        label: "Try It",
+        title: "Coin math",
+        body: ["Solve this: 8 coins in minus 5 coins out equals what?"],
+      },
+    ],
+    prompt: "Revenue means... Expenses mean... Profit means...",
+    parentNote: "This chapter builds vocabulary. It is not accounting advice.",
+  },
+  {
+    id: "test-table",
+    number: 6,
+    place: "Test Table",
+    workbookTitle: "How Do You Test an Idea?",
+    subtitle: "Try a small version first.",
+    district: "Planning Desk",
+    status: "queue",
+    icon: "🧪",
+    marker: { x: 28, y: 38 },
+    color: "blue",
+    sourceIds: ["sba-market"],
+  },
+  {
+    id: "price-post",
+    number: 7,
+    place: "Price Post",
+    workbookTitle: "What Price Makes Sense?",
+    subtitle: "A fair price helps the customer and the business.",
+    district: "Planning Desk",
+    status: "queue",
+    icon: "🏷️",
+    marker: { x: 67, y: 25 },
+    color: "gold",
+    sourceIds: ["sba-market"],
+  },
+  {
+    id: "market-booth",
+    number: 8,
+    place: "Market Booth",
+    workbookTitle: "Getting First Customers",
+    subtitle: "Good sellers listen before they sell.",
+    district: "Planning Desk",
+    status: "queue",
+    icon: "⛺",
+    marker: { x: 84, y: 70 },
+    color: "green",
+    sourceIds: ["sba-market"],
+  },
+  {
+    id: "ledger-office",
+    number: 9,
+    place: "Ledger Office",
+    workbookTitle: "Records and Receipts",
+    subtitle: "A record helps a founder remember what happened.",
+    district: "Money Office",
+    status: "queue",
+    icon: "🧾",
+    marker: { x: 34, y: 82 },
+    color: "purple",
+    sourceIds: ["irs-records"],
+  },
+  {
+    id: "sign-shop",
+    number: 10,
+    place: "Sign Shop",
+    workbookTitle: "Names, Signs, and Slogans",
+    subtitle: "A clear name helps customers remember you.",
+    district: "Main Street Basics",
+    status: "queue",
+    icon: "🪧",
+    marker: { x: 48, y: 75 },
+    color: "red",
+    sourceIds: ["sba-plan"],
+  },
+  {
+    id: "town-hall",
+    number: 11,
+    place: "Town Hall",
+    workbookTitle: "Permits, Rules, and Town Share",
+    subtitle: "Businesses learn the rules and help the community.",
+    district: "Grown-Up Setup",
+    status: "queue",
+    icon: "🏛️",
+    marker: { x: 16, y: 28 },
+    color: "purple",
+    sourceIds: ["sba-register"],
+  },
+  {
+    id: "state-desk",
+    number: 12,
+    place: "State Filing Desk",
+    workbookTitle: "LLC, Corporation, and State Filing",
+    subtitle: "Some businesses use official state paperwork.",
+    district: "Grown-Up Setup",
+    status: "queue",
+    icon: "📄",
+    marker: { x: 52, y: 14 },
+    color: "blue",
+    sourceIds: ["sba-structure", "sba-register"],
+  },
+  {
+    id: "federal-desk",
+    number: 13,
+    place: "Federal Desk",
+    workbookTitle: "What Is an EIN?",
+    subtitle: "A federal tax ID number for a business.",
+    district: "Grown-Up Setup",
+    status: "queue",
+    icon: "🏤",
+    marker: { x: 84, y: 18 },
+    color: "green",
+    sourceIds: ["irs-ein"],
+  },
+  {
+    id: "payroll-counter",
+    number: 14,
+    place: "Payroll Counter",
+    workbookTitle: "Employees and Payroll",
+    subtitle: "Paying workers is a grown-up record system.",
+    district: "Grown-Up Setup",
+    status: "queue",
+    icon: "🧑‍💼",
+    marker: { x: 72, y: 85 },
+    color: "red",
+    sourceIds: ["irs-employees", "irs-records"],
+  },
+  {
+    id: "delivery-road",
+    number: 15,
+    place: "Delivery Road",
+    workbookTitle: "Growing Beyond Town",
+    subtitle: "A business can grow step by step.",
+    district: "Growth Map",
+    status: "queue",
+    icon: "🛻",
+    marker: { x: 91, y: 54 },
+    color: "gold",
+    sourceIds: ["sba-business-plan"],
+  },
+];
+
 const GROWTH_PATH = [
-  ["Main Street", "Learn the first business words"],
-  ["Whole Town", "Plan a simple shop"],
-  ["County Route", "Test customers and costs"],
-  ["State Map", "Learn setup and records"],
-  ["U.S. Map", "Study bigger business systems"],
-  ["World Shipping", "Optional future stage"],
+  ["First Stand", "Learn the first business words."],
+  ["Small Shop", "Plan a simple shop with supplies and customers."],
+  ["Whole Town", "Keep records and serve more people."],
+  ["County Route", "Think about delivery and a second location."],
+  ["State Map", "Learn grown-up setup words."],
+  ["U.S. Business", "Study bigger business systems."],
+  ["World Shipping", "Optional future stage."],
 ];
 
 const DEFAULT_STATE = { profiles: {}, activeProfileId: "" };
 let memoryStore = null;
 let appState = loadRootState();
 let view = "welcome";
-let activeChapterId = null;
-let selectedDistrict = "";
-let tempIcon = SAFE_ICONS[0];
+let activePlaceId = "idea-bench";
+let drawerOpen = false;
 
 const app = document.getElementById("app");
 const toast = document.getElementById("toast");
@@ -394,7 +410,7 @@ function loadRootState() {
   if (hasSharedProfiles()) return normalizeRoot(DEFAULT_STATE);
   const storage = safeLocalStorage();
   if (storage) {
-    const raw = storage.getItem(LEGACY_STORAGE_KEY);
+    const raw = storage.getItem(LOCAL_ROOT_KEY);
     if (raw) {
       try {
         return normalizeRoot(JSON.parse(raw));
@@ -410,7 +426,7 @@ function saveRootState() {
   if (hasSharedProfiles()) return;
   const storage = safeLocalStorage();
   if (storage) {
-    storage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(appState));
+    storage.setItem(LOCAL_ROOT_KEY, JSON.stringify(appState));
     return;
   }
   memoryStore = appState;
@@ -425,6 +441,26 @@ function normalizeRoot(root) {
   });
   if (next.activeProfileId && !next.profiles[next.activeProfileId]) next.activeProfileId = "";
   return next;
+}
+
+function normalizeProfile(profile, id) {
+  const legacyCompleted = Array.isArray(profile?.completedBuildings) ? profile.completedBuildings : [];
+  const legacyQueued = Array.isArray(profile?.queuedWorkbooks) ? profile.queuedWorkbooks : [];
+  return {
+    id,
+    name: cleanName(profile?.name || DEFAULT_PROFILE_NAME),
+    completedWorkbooks: Array.isArray(profile?.completedWorkbooks)
+      ? profile.completedWorkbooks.filter(getWorkbook)
+      : legacyCompleted.filter(getWorkbook),
+    queuedWorkbooks: legacyQueued.filter(getWorkbook),
+    notebook: profile?.notebook || {},
+    founderBusiness: {
+      name: profile?.founderBusiness?.name || profile?.businessName || "",
+      offer: profile?.founderBusiness?.offer || profile?.customBusiness?.product || "",
+      customer: profile?.founderBusiness?.customer || "",
+      supplies: profile?.founderBusiness?.supplies || "",
+    },
+  };
 }
 
 function sharedProfileBase() {
@@ -453,13 +489,10 @@ function loadSharedProgress(base) {
 function saveSharedProgress(profile) {
   if (!hasSharedProfiles() || !profile) return;
   const progress = {
-    selectedBusiness: profile.selectedBusiness || "",
-    customBusiness: profile.customBusiness || {},
-    completedBuildings: profile.completedBuildings || [],
+    completedWorkbooks: profile.completedWorkbooks || [],
+    queuedWorkbooks: profile.queuedWorkbooks || [],
     notebook: profile.notebook || {},
-    businessName: profile.businessName || "",
-    slogan: profile.slogan || "",
-    signColor: profile.signColor || "#B84A32",
+    founderBusiness: profile.founderBusiness || {},
   };
   try {
     window.SaveStore.setItem(STORAGE_KEY, JSON.stringify(progress));
@@ -468,22 +501,25 @@ function saveSharedProgress(profile) {
 
 function migrateLegacyProgress(base) {
   const storage = safeLocalStorage();
-  if (!storage) return null;
+  let picked = null;
   try {
-    const raw = storage.getItem(LEGACY_STORAGE_KEY);
-    if (!raw) return null;
-    const legacy = JSON.parse(raw);
-    const profiles = Object.values(legacy?.profiles || {});
-    const byName = profiles.find((p) => cleanName(p.name).toLowerCase() === cleanName(base.name).toLowerCase());
-    const byActive = legacy?.activeProfileId ? legacy.profiles?.[legacy.activeProfileId] : null;
-    const picked = byName || byActive || null;
-    if (!picked) return null;
-    const migrated = normalizeProfile({ ...picked, id: base.id, name: base.name }, base.id);
-    saveSharedProgress(migrated);
-    return migrated;
-  } catch {
-    return null;
+    const raw = window.SaveStore?.getItem?.(LEGACY_STORAGE_KEY);
+    if (raw) picked = JSON.parse(raw);
+  } catch {}
+  if (!picked && storage) {
+    try {
+      const raw = storage.getItem("save.mainStreetMakers.v1");
+      const legacy = raw ? JSON.parse(raw) : null;
+      const profiles = Object.values(legacy?.profiles || {});
+      picked =
+        profiles.find((p) => cleanName(p.name).toLowerCase() === cleanName(base.name).toLowerCase()) ||
+        (legacy?.activeProfileId ? legacy.profiles?.[legacy.activeProfileId] : null);
+    } catch {}
   }
+  if (!picked) return null;
+  const migrated = normalizeProfile({ ...picked, id: base.id, name: base.name }, base.id);
+  saveSharedProgress(migrated);
+  return migrated;
 }
 
 function structuredCloneSafe(obj) {
@@ -492,21 +528,6 @@ function structuredCloneSafe(obj) {
   } catch {
     return JSON.parse(JSON.stringify(obj));
   }
-}
-
-function normalizeProfile(profile, id) {
-  const legacyNotebook = profile?.notebook || {};
-  return {
-    id,
-    name: cleanName(profile?.name || DEFAULT_PROFILE_NAME),
-    selectedBusiness: profile?.selectedBusiness || "",
-    customBusiness: profile?.customBusiness || {},
-    completedBuildings: Array.isArray(profile?.completedBuildings) ? profile.completedBuildings.filter((id) => getChapter(id)) : [],
-    notebook: legacyNotebook,
-    businessName: profile?.businessName || "",
-    slogan: profile?.slogan || "",
-    signColor: profile?.signColor || "#B84A32",
-  };
 }
 
 function cleanName(value) {
@@ -542,30 +563,13 @@ function createProfile(name) {
   return appState.profiles[id];
 }
 
-function currentBusiness(profile = activeProfile()) {
-  if (!profile) return null;
-  if (profile.selectedBusiness === "custom") {
-    return {
-      title: profile.businessName || profile.customBusiness.shopName || "My Shop",
-      type: profile.customBusiness.shopType || "Small shop",
-      product: profile.customBusiness.product || "Helpful offer",
-      icon: profile.customBusiness.icon || "🧺",
-      price: Number(profile.customBusiness.price) || 1,
-      supplies: profile.customBusiness.supplies || ["supply one", "supply two", "supply three"],
-      blurb: "A shop designed by the active learner.",
-    };
-  }
-  return PRESET_BUSINESSES.find((b) => b.id === profile.selectedBusiness) || null;
-}
-
 function brandMark() {
   return `
-    <svg class="brand-mark" viewBox="0 0 80 80" role="img" aria-label="SAVE Learning Co. Main Street mark">
-      <path d="M12 54h56v14H12z" fill="currentColor" opacity=".18"/>
-      <path d="M16 28h48v30H16z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
-      <path d="M10 30 40 10l30 20" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M25 42h30M25 51h20" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="60" cy="58" r="7" fill="#D7A84A" stroke="currentColor" stroke-width="4"/>
+    <svg class="brand-mark founder-mark" viewBox="0 0 80 80" role="img" aria-label="SAVE Learning Co. Founder Town mark">
+      <path d="M11 61h58" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+      <path d="M17 38h18v23H17zM45 26h18v35H45z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M14 38l12-11 12 11M42 26l12-12 12 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="39" cy="51" r="7" fill="#D7A84A" stroke="currentColor" stroke-width="4"/>
     </svg>
   `;
 }
@@ -573,45 +577,46 @@ function brandMark() {
 function topbar() {
   const profile = activeProfile();
   return `
-    <header class="topbar">
-      <div class="brand-lockup">
+    <header class="topbar founder-topbar">
+      <button class="brand-lockup brand-button" data-action="town" data-testid="button-brand-town" aria-label="Back to Founder Town">
         ${brandMark()}
         <div>
           <div class="brand-kicker">SAVE Learning Co.</div>
-          <div class="brand-name">Business Basics Atlas</div>
+          <div class="brand-name">Founder Town</div>
         </div>
-      </div>
-      <button class="profile-pill" data-action="profiles" data-testid="button-profile">
-        <span aria-hidden="true">👤</span>
-        <span>${profile ? escapeHtml(profile.name) : "Choose learner"}</span>
       </button>
+      <div class="top-actions">
+        <button class="profile-pill" data-action="profiles" data-testid="button-profile">
+          <span aria-hidden="true">👤</span>
+          <span>${profile ? escapeHtml(profile.name) : "Choose learner"}</span>
+        </button>
+        <button class="icon-button" data-action="library" data-testid="button-library" aria-label="Open workbook library">☰</button>
+      </div>
     </header>
   `;
 }
 
 function render() {
   const profile = activeProfile();
-  if (!profile && view !== "welcome" && view !== "profiles") view = "profiles";
+  if (!profile && !["welcome", "profiles"].includes(view)) view = hasSharedProfiles() ? "welcome" : "profiles";
   let html = topbar();
   if (view === "welcome") html += renderWelcome();
   if (view === "profiles") html += renderProfiles();
-  if (view === "business") html += renderBusinessPicker();
-  if (view === "creator") html += renderCreator();
-  if (view === "map") html += renderAtlas();
+  if (view === "town") html += renderTown();
+  if (view === "workbook") html += renderWorkbook(activePlaceId);
   if (view === "notebook") html += renderNotebook();
   if (view === "parent") html += renderParentGuide();
   if (view === "growth") html += renderGrowthPath();
   if (view === "sources") html += renderSources();
-  app.innerHTML = html + footer();
+  app.innerHTML = html + footer() + renderLibraryDrawer();
   wireEvents();
-  if (activeChapterId) renderChapterModal(activeChapterId);
 }
 
 function footer() {
   return `
     <footer class="footer-note">
       <strong>SAVE Learning Co.</strong> · © 2026 SAVE Learning Co. All rights reserved.
-      <br />Main Street Press visuals are original CSS/SVG-style art. No stock photos are used in this v1 app.
+      <br />Founder Town uses original CSS/SVG-style visuals. No stock photos are used in this v1 app.
     </footer>
   `;
 }
@@ -620,39 +625,43 @@ function renderWelcome() {
   const profile = activeProfile();
   const learnerLine = profile ? `Welcome back, ${escapeHtml(profile.name)}.` : "Choose a learner to begin.";
   return `
-    <main class="hero simple-hero">
-      <section class="hero-card simple-cover">
-        <span class="kicker">Small Town Business · Main Street Press</span>
-        <h1>Business Basics Atlas</h1>
-        <p class="hero-copy">${learnerLine} Learn how business works in 12 short chapters.</p>
+    <main class="founder-welcome">
+      <section class="welcome-copy">
+        <span class="kicker">SAVE Small Town Business</span>
+        <h1>Founder Town</h1>
+        <p>${learnerLine} Tap a place in town. Open a workbook. Build your Founder Notebook.</p>
         <div class="hero-actions">
-          <button class="primary-button" data-action="start" data-testid="button-start">Start Learning</button>
+          <button class="primary-button" data-action="start" data-testid="button-start">Enter Founder Town</button>
           <button class="secondary-button" data-action="parent" data-testid="button-parent-welcome">Parent Guide</button>
         </div>
-        <div class="pull-note">
-          This is not legal, tax, payroll, or accounting advice. It is a child-friendly map of business ideas for parent-guided learning.
+        <div class="map-legend welcome-legend">
+          <span><i class="dot ready"></i> Ready to read</span>
+          <span><i class="dot queue"></i> Tap to queue</span>
         </div>
+      </section>
+      <section class="mini-town-preview" aria-label="Founder Town preview">
+        ${townSvg(false)}
       </section>
     </main>
   `;
 }
 
 function renderProfiles() {
-  if (hasSharedProfiles()) return renderSharedProfiles();
+  if (hasSharedProfiles()) return renderWelcome();
   const profiles = Object.values(appState.profiles);
   return `
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Learner Profiles</span>
-        <h1>Who is learning today?</h1>
-        <p>Each child gets a separate Founder Notebook.</p>
+        <h1>Who is exploring today?</h1>
+        <p>Each child gets a separate Founder Notebook and workbook queue.</p>
       </section>
       <section class="grid">
         ${profiles.map((profile) => `
           <button class="business-card" data-profile-id="${profile.id}" data-testid="button-profile-${profile.id}">
             <div class="business-icon">👤</div>
             <h3>${escapeHtml(profile.name)}</h3>
-            <p>${visitedCount(profile)} chapters visited · ${notebookCount(profile)} notes</p>
+            <p>${completedCount(profile)} workbooks done · ${queuedCount(profile)} queued</p>
           </button>
         `).join("")}
         <form class="business-card profile-form" data-profile-form>
@@ -673,7 +682,7 @@ function renderSharedProfiles() {
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Shared SAVE Profiles</span>
-        <h1>Who is learning today?</h1>
+        <h1>Who is exploring today?</h1>
         <p>Using the shared Atlas / Animal Kingdom learner profile system.</p>
       </section>
       <section class="grid">
@@ -689,7 +698,7 @@ function renderSharedProfiles() {
             <button class="business-card ${isActive ? "selected" : ""}" data-shared-profile-id="${shared.id}" data-testid="button-shared-profile-${shared.id}">
               <div class="business-icon">${shared.avatar ? `<img src="${shared.avatar}" alt="" />` : "👤"}</div>
               <h3>${escapeHtml(base.name)}</h3>
-              <p>${visitedCount(progress)} chapters visited · ${notebookCount(progress)} notes</p>
+              <p>${completedCount(progress)} done · ${queuedCount(progress)} queued</p>
             </button>
           `;
         }).join("")}
@@ -698,270 +707,228 @@ function renderSharedProfiles() {
   `;
 }
 
-function renderBusinessPicker() {
+function renderTown() {
   const profile = activeProfile();
+  const place = getWorkbook(activePlaceId) || WORKBOOKS[0];
   return `
-    <main class="screen">
-      <section class="screen-header">
-        <span class="kicker">${escapeHtml(profile.name)}'s Founder Notebook</span>
-        <h1>Pick an example business.</h1>
-        <p>The chapters use this business for examples. You can use a preset or create your own shop.</p>
-      </section>
-      <section class="business-grid">
-        ${PRESET_BUSINESSES.map(businessCard).join("")}
-        <button class="business-card custom-card" data-action="creator" data-testid="button-custom-shop">
-          <div class="business-icon">✏️</div>
-          <h3>Create My Own Shop</h3>
-          <p>Cookie Cart, Bracelet Booth, Lawn Helper, Bookmark Shop, Garden Stand, Birthday Card Table...</p>
-        </button>
-      </section>
-    </main>
-  `;
-}
-
-function businessCard(business) {
-  return `
-    <button class="business-card" data-business="${business.id}" data-testid="button-business-${business.id}">
-      <div class="business-icon">${business.icon}</div>
-      <h3>${business.title}</h3>
-      <p>${business.blurb}</p>
-      <div class="ledger-row"><span>Example offer</span><strong>${escapeHtml(business.product)}</strong></div>
-    </button>
-  `;
-}
-
-function renderCreator() {
-  return `
-    <main class="screen">
-      <section class="creator-card">
-        <span class="kicker">Create My Own Shop</span>
-        <h1>Design a simple business example.</h1>
-        <form data-creator-form class="form-grid">
-          <label>Shop name <input name="shopName" required maxlength="36" placeholder="Bookmark Shop" data-testid="input-shop-name" /></label>
-          <label>Shop type <input name="shopType" required maxlength="36" placeholder="Market booth" data-testid="input-shop-type" /></label>
-          <label>Product or service <input name="product" required maxlength="48" placeholder="Handmade bookmarks" data-testid="input-product" /></label>
-          <label>Supply 1 <input name="supply1" required maxlength="24" placeholder="paper" /></label>
-          <label>Supply 2 <input name="supply2" required maxlength="24" placeholder="markers" /></label>
-          <label>Supply 3 <input name="supply3" required maxlength="24" placeholder="ribbon" /></label>
-          <label>Example price <input name="price" type="number" min="1" max="99" value="2" data-testid="input-price" /></label>
-          <div class="safe-icons" role="group" aria-label="Choose a shop icon">
-            ${SAFE_ICONS.map((icon) => `<button type="button" class="icon-choice ${icon === tempIcon ? "selected" : ""}" data-icon="${icon}" data-testid="button-icon-${icon}">${icon}</button>`).join("")}
-          </div>
-          <button class="primary-button" type="submit" data-testid="button-save-custom-shop">Save Shop</button>
-        </form>
-      </section>
-    </main>
-  `;
-}
-
-function renderAtlas() {
-  const profile = activeProfile();
-  const business = currentBusiness(profile);
-  return `
-    <main class="screen simple-atlas">
-      <section class="screen-header atlas-header">
-        <div>
-          <span class="kicker">Business Basics Atlas</span>
-          <h1>Business Basics</h1>
-          <p>Read in order, or open the chapter you need. Your example business is <strong>${escapeHtml(business.title)}</strong>.</p>
-          <div class="atlas-link-row">
-            <button class="link-button" data-action="notebook" data-testid="button-notebook">Founder Notebook</button>
-            <button class="link-button" data-action="parent" data-testid="button-parent">Parent Guide</button>
-            <button class="link-button" data-action="sources" data-testid="button-sources">Sources</button>
-            <button class="link-button" data-action="business" data-testid="button-change-business">Change business</button>
-          </div>
+    <main class="town-shell">
+      <section class="town-stage" aria-label="Clickable Founder Town map">
+        <div class="town-title-card">
+          <span class="kicker">Clickable business town</span>
+          <h1>Tap a place to open a workbook.</h1>
+          <p>Ready places open now. Other places can be queued for future workbooks.</p>
         </div>
-        ${statusStrip(profile)}
+        ${townSvg(true, profile)}
+        <div class="town-controls">
+          <button class="secondary-button" data-action="notebook" data-testid="button-notebook-town">Founder Notebook</button>
+          <button class="secondary-button" data-action="growth" data-testid="button-growth-town">Growth Map</button>
+          <button class="secondary-button" data-action="library" data-testid="button-library-town">Library</button>
+        </div>
       </section>
-      <section class="contents-page">
-        ${DISTRICTS.map((district) => `
-          <article class="contents-section">
-            <header class="contents-section__header">
-              <span class="section-icon">${district.icon}</span>
-              <div>
-                <span class="kicker">${escapeHtml(district.name)}</span>
-                <h2>${escapeHtml(district.sign)}</h2>
-                <p>${escapeHtml(district.blurb)}</p>
-              </div>
-            </header>
-            <div class="chapter-list">
-              ${chaptersFor(district.id).map((chapter) => chapterCard(profile, chapter)).join("")}
-            </div>
-          </article>
-        `).join("")}
+      ${renderPlaceSheet(place, profile)}
+    </main>
+  `;
+}
+
+function townSvg(interactive = true, profile = activeProfile()) {
+  const places = WORKBOOKS.map((place) => {
+    const status = workbookStatus(place, profile);
+    const attrs = interactive
+      ? `role="button" tabindex="0" data-place="${place.id}" data-testid="button-place-${place.id}" aria-label="${escapeHtml(place.place)}"`
+      : "";
+    return `
+      <g class="town-pin pin-${place.color} ${status}" transform="translate(${place.marker.x} ${place.marker.y})" ${attrs}>
+        <circle class="pin-glow" r="5.8"></circle>
+        <circle class="pin-core" r="3.15"></circle>
+        <text x="0" y="-7.2" text-anchor="middle">${place.icon}</text>
+        <text class="pin-label" x="0" y="8.6" text-anchor="middle">${escapeSvg(place.place)}</text>
+      </g>
+    `;
+  }).join("");
+
+  return `
+    <svg class="founder-town-map" viewBox="0 0 100 100" role="img" aria-label="Founder Town clickable business map">
+      <defs>
+        <linearGradient id="townSky" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#F7F0DF"/>
+          <stop offset="1" stop-color="#E6D6B8"/>
+        </linearGradient>
+        <filter id="paperShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.4" stdDeviation="1.2" flood-color="#241A12" flood-opacity=".18"/>
+        </filter>
+      </defs>
+      <rect x="2" y="2" width="96" height="96" rx="8" fill="url(#townSky)" stroke="#241A12" stroke-opacity=".18"/>
+      <path d="M7 78 C18 70 25 68 34 59 C45 48 54 51 63 39 C72 27 83 30 94 20" fill="none" stroke="#C8A978" stroke-width="9" stroke-linecap="round"/>
+      <path d="M7 78 C18 70 25 68 34 59 C45 48 54 51 63 39 C72 27 83 30 94 20" fill="none" stroke="#F7F0DF" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 4"/>
+      <path d="M8 24 C18 19 30 19 42 24 C53 29 62 25 73 19 C84 13 93 15 97 20" fill="none" stroke="#5E7FA3" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+      <g filter="url(#paperShadow)" opacity=".96">
+        <path d="M12 66h16v10H12zM14 59h12v7H14z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".18"/>
+        <path d="M34 49h15v12H34zM37 43h9v6H37z" fill="#F0DFC0" stroke="#241A12" stroke-opacity=".18"/>
+        <path d="M56 58h15v13H56zM59 50h9v8H59z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".18"/>
+        <path d="M69 35h17v12H69zM72 28h11v7H72z" fill="#F3D8C8" stroke="#241A12" stroke-opacity=".18"/>
+        <path d="M45 22h16v12H45zM49 15h8v7H49z" fill="#E7D7EC" stroke="#241A12" stroke-opacity=".18"/>
+        <path d="M10 21h15v12H10zM13 15h9v6H13z" fill="#DEE7D9" stroke="#241A12" stroke-opacity=".18"/>
+        <path d="M78 76h16v11H78zM82 68h8v8H82z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".18"/>
+      </g>
+      <g class="town-trees" opacity=".75">
+        <circle cx="19" cy="47" r="2.5" fill="#2F5D46"/><circle cx="22" cy="44" r="2" fill="#2F5D46"/>
+        <circle cx="88" cy="38" r="2.4" fill="#2F5D46"/><circle cx="91" cy="42" r="1.9" fill="#2F5D46"/>
+        <circle cx="42" cy="84" r="2.2" fill="#2F5D46"/><circle cx="46" cy="82" r="1.8" fill="#2F5D46"/>
+      </g>
+      ${places}
+    </svg>
+  `;
+}
+
+function renderPlaceSheet(place, profile) {
+  const status = workbookStatus(place, profile);
+  const ready = place.status === "ready";
+  const queued = profile?.queuedWorkbooks?.includes(place.id);
+  const done = profile?.completedWorkbooks?.includes(place.id);
+  return `
+    <aside class="place-sheet" data-testid="place-sheet">
+      <div class="sheet-handle"></div>
+      <div class="place-sheet-head">
+        <div class="place-icon ${status}">${place.icon}</div>
+        <div>
+          <span class="kicker">Vol. ${place.number} · ${escapeHtml(place.district)}</span>
+          <h2>${escapeHtml(place.place)}</h2>
+          <p>${escapeHtml(place.subtitle || "This workbook is waiting on the future shelf.")}</p>
+        </div>
+      </div>
+      <div class="sheet-status-row">
+        <span class="badge-chip ${status}">${done ? "Completed" : ready ? "Ready to read" : queued ? "Queued" : "Tap to queue"}</span>
+        <span class="badge-chip">${escapeHtml(place.workbookTitle)}</span>
+      </div>
+      <div class="sheet-actions">
+        ${ready ? `<button class="primary-button" data-action="open-workbook" data-workbook="${place.id}" data-testid="button-open-workbook">Open workbook →</button>` : ""}
+        ${!ready ? `<button class="primary-button" data-action="queue-workbook" data-workbook="${place.id}" data-testid="button-queue-workbook">${queued ? "Remove from queue" : "Queue this workbook"}</button>` : ""}
+        <button class="secondary-button" data-action="library" data-testid="button-sheet-library">Workbook Library</button>
+      </div>
+      ${!ready ? `<p class="small-note">This place is visible on the map so your child can ask for it, just like tapping an Atlas country without a workbook yet.</p>` : ""}
+    </aside>
+  `;
+}
+
+function renderWorkbook(id) {
+  const profile = activeProfile();
+  const workbook = getWorkbook(id) || WORKBOOKS[0];
+  if (workbook.status !== "ready") {
+    view = "town";
+    return renderTown();
+  }
+  const note = profile?.notebook?.[workbook.id] || "";
+  const done = profile?.completedWorkbooks?.includes(workbook.id);
+  return `
+    <main class="reader-shell" data-testid="workbook-reader">
+      <section class="workbook-cover">
+        <div class="cover-art">
+          ${townSvg(false, profile)}
+        </div>
+        <div class="cover-copy">
+          <button class="mark-done ${done ? "checked" : ""}" data-action="mark-done" data-workbook="${workbook.id}" data-testid="button-mark-done">${done ? "✓ Done" : "□ Mark done"}</button>
+          <span class="kicker">Vol. ${workbook.number} · ${escapeHtml(workbook.district)}</span>
+          <h1>${escapeHtml(workbook.workbookTitle)}</h1>
+          <p>${escapeHtml(workbook.subtitle)}</p>
+          <button class="secondary-button" data-action="town" data-testid="button-back-town-reader">Back to town</button>
+        </div>
+      </section>
+      <section class="reader-page about-book">
+        <span class="kicker">About this workbook</span>
+        <h2>${escapeHtml(workbook.place)}: ${escapeHtml(workbook.workbookTitle)}</h2>
+        <p>Part of the SAVE Small Town Business series published by SAVE Learning Co. Designed for curious readers around Grade 3 with a parent nearby.</p>
+        <p><strong>© 2026 SAVE Learning Co. All rights reserved.</strong></p>
+        <p>This workbook is for learning only. It is not legal, tax, payroll, or accounting advice.</p>
+      </section>
+      <section class="reader-page feature-page">
+        <span class="kicker">Big Question</span>
+        <h2>${escapeHtml(workbook.bigQuestion)}</h2>
+        <p class="lede">${escapeHtml(workbook.opening)}</p>
+      </section>
+      ${workbook.sections.map((section, index) => `
+        <section class="reader-page workbook-section">
+          <span class="kicker">${escapeHtml(section.label)}</span>
+          <h2>${escapeHtml(section.title)}</h2>
+          ${section.body.map((p) => `<p>${escapeHtml(p)}</p>`).join("")}
+          ${index === 1 ? `<div class="pull-note">Business words are tools. We use them gently, one at a time.</div>` : ""}
+        </section>
+      `).join("")}
+      <section class="reader-page notebook-prompt">
+        <span class="kicker">Founder Notebook</span>
+        <h2>${escapeHtml(workbook.prompt)}</h2>
+        <textarea data-notebook-field="${workbook.id}" data-testid="textarea-workbook-note" placeholder="Write or dictate one short answer...">${escapeHtml(note)}</textarea>
+        <div class="reader-actions">
+          <button class="primary-button" data-action="save-workbook" data-workbook="${workbook.id}" data-testid="button-save-workbook">Save to Notebook</button>
+          <button class="secondary-button" data-action="notebook" data-testid="button-open-notebook-reader">Open Notebook</button>
+        </div>
+      </section>
+      <section class="reader-page parent-mini-guide">
+        <span class="kicker">Parent Note</span>
+        <p>${escapeHtml(workbook.parentNote)}</p>
       </section>
     </main>
   `;
 }
 
-function chapterCard(profile, chapter) {
-  const done = profile.completedBuildings.includes(chapter.id);
-  return `
-    <button class="chapter-card ${done ? "done" : ""}" data-chapter="${chapter.id}" data-testid="button-chapter-${chapter.id}">
-      <span class="chapter-number">${chapter.number}</span>
-      <span class="chapter-icon">${chapter.icon}</span>
-      <span>
-        <strong>${escapeHtml(chapter.title)}</strong>
-        <small>${escapeHtml(chapter.bigQuestion)}</small>
-      </span>
-      <b>${done ? "Saved" : "Open"}</b>
-    </button>
-  `;
-}
-
-function statusStrip(profile) {
-  return `
-    <div class="status-strip" data-testid="status-strip">
-      <span class="status-chip" data-testid="text-progress">📚 ${visitedCount(profile)}/${CHAPTERS.length} chapters visited</span>
-      <span class="status-chip" data-testid="text-notes">✎ ${notebookCount(profile)} notebook notes</span>
-    </div>
-  `;
-}
-
-function renderChapterModal(id) {
+function renderLibraryDrawer() {
   const profile = activeProfile();
-  const chapter = getChapter(id);
-  if (!profile || !chapter) return;
-  const business = currentBusiness(profile) || PRESET_BUSINESSES[0];
-  const done = profile.completedBuildings.includes(id);
-  const note = profile.notebook[id] || "";
-  const modal = document.createElement("div");
-  modal.className = "modal-backdrop";
-  modal.dataset.modal = "chapter";
-  modal.innerHTML = `
-    <article class="modal-card chapter-modal" role="dialog" aria-modal="true" aria-labelledby="chapter-title" data-testid="modal-chapter">
-      <header class="modal-header">
-        <div>
-          <span class="mission-tag">${escapeHtml(getDistrict(chapter.district).name)} · Chapter ${chapter.number}</span>
-          <h2 id="chapter-title">${chapter.icon} ${escapeHtml(chapter.title)}</h2>
-          <p>${escapeHtml(chapter.bigQuestion)}</p>
-        </div>
-        <button class="icon-button" data-action="close-chapter" aria-label="Close chapter" data-testid="button-close-chapter">✕</button>
-      </header>
-      <div class="chapter-spread">
-        <section class="feature-page">
-          <span class="kicker">Read Together</span>
-          <h3 class="feature-headline">${escapeHtml(chapter.bigQuestion)}</h3>
-          ${chapter.reading.map((p) => `<p>${withBusiness(p, business)}</p>`).join("")}
-          <div class="ledger-definition">
-            <strong>Grown-up business word</strong>
-            <dl>
-              <div><dt>${escapeHtml(chapter.grownWord)}</dt><dd>${escapeHtml(chapter.wordMeaning)}</dd></div>
-            </dl>
-          </div>
-          <div class="pull-note"><strong>Example:</strong> ${withBusiness(chapter.kidExample, business)}</div>
-        </section>
-        <section class="activity-zone">
-          <div class="activity-card">
-            <span class="kicker">Try It</span>
-            <h3>${escapeHtml(chapter.tryIt)}</h3>
-            ${renderChapterActivity(chapter, business)}
-          </div>
-          <div class="activity-card receipt-card">
-            <span class="kicker">Founder Notebook</span>
-            <h3>${escapeHtml(chapter.prompt)}</h3>
-            <textarea data-notebook-field="${chapter.id}" data-testid="textarea-chapter-note" placeholder="Write or dictate one short answer...">${escapeHtml(note)}</textarea>
-          </div>
-          <div class="activity-card parent-mini-guide">
-            <span class="kicker">Parent Note</span>
-            <p>${escapeHtml(chapter.parentNote)}</p>
-          </div>
-        </section>
+  const open = drawerOpen ? "open" : "";
+  return `
+    <aside class="library-drawer ${open}" data-testid="library-drawer" aria-hidden="${drawerOpen ? "false" : "true"}">
+      <div class="drawer-head">
+        <span class="kicker">My Library</span>
+        <button class="icon-button" data-action="close-library" data-testid="button-close-library" aria-label="Close library">✕</button>
       </div>
-      <div class="mission-actions">
-        <button class="primary-button" data-action="save-chapter" data-chapter-save="${chapter.id}" data-testid="button-save-chapter">${done ? "Update Notebook" : "Save Chapter"}</button>
-        <button class="secondary-button" data-action="notebook" data-testid="button-open-notebook-chapter">Open Notebook</button>
+      <h2>SAVE Business Workbooks</h2>
+      <div class="library-list">
+        ${WORKBOOKS.map((book) => {
+          const status = workbookStatus(book, profile);
+          return `
+            <button class="library-row ${status}" data-place="${book.id}" data-testid="button-library-${book.id}">
+              <span>${book.number}</span>
+              <strong>${escapeHtml(book.workbookTitle)}</strong>
+              <em>${book.status === "ready" ? "Ready" : profile?.queuedWorkbooks?.includes(book.id) ? "Queued" : "Queue"}</em>
+            </button>
+          `;
+        }).join("")}
       </div>
-    </article>
+    </aside>
+    <button class="drawer-scrim ${open}" data-action="close-library" aria-label="Close library overlay"></button>
   `;
-  document.body.appendChild(modal);
-  requestAnimationFrame(() => modal.classList.add("show"));
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal || event.target.closest("[data-action='close-chapter']")) closeChapterModal();
-  });
-}
-
-function renderChapterActivity(chapter, business) {
-  if (chapter.id === "offer") {
-    return `
-      <div class="choice-list">
-        <button class="choice-card" data-quick-note="My offer is a product because it is something a customer can hold.">Product</button>
-        <button class="choice-card" data-quick-note="My offer is a service because it is a helpful job.">Service</button>
-        <button class="choice-card" data-quick-note="My offer is both a product and a service.">Both</button>
-      </div>
-    `;
-  }
-  if (chapter.id === "cost") {
-    return `<div class="ledger-list">${business.supplies.map((s) => `<div class="ledger-row"><span>${escapeHtml(s)}</span><strong>starter supply</strong></div>`).join("")}</div>`;
-  }
-  if (chapter.id === "money") {
-    return `<div class="math-strip"><strong>8 in</strong><span>−</span><strong>5 out</strong><span>=</span><strong>3 left</strong></div>`;
-  }
-  if (chapter.id === "structure") {
-    return `
-      <div class="ledger-list">
-        <div class="ledger-row"><span>Sole proprietor</span><strong>one owner</strong></div>
-        <div class="ledger-row"><span>LLC</span><strong>state paperwork</strong></div>
-        <div class="ledger-row"><span>Corporation</span><strong>formal company rules</strong></div>
-      </div>
-    `;
-  }
-  if (chapter.id === "ein") {
-    return `<p class="status-chip">Safe answer: ask a grown-up to check official federal, state, and local rules.</p>`;
-  }
-  return `<p>Say your answer out loud first. Then write one short sentence in the Founder Notebook.</p>`;
-}
-
-function closeChapterModal() {
-  const modal = document.querySelector("[data-modal='chapter']");
-  if (modal) modal.remove();
-  activeChapterId = null;
-}
-
-function saveChapter(id) {
-  const profile = activeProfile();
-  const chapter = getChapter(id);
-  if (!profile || !chapter) return;
-  const textarea = document.querySelector(`[data-notebook-field="${CSS.escape(id)}"]`);
-  const value = textarea ? textarea.value.trim() : "";
-  if (value) profile.notebook[id] = value;
-  if (!profile.completedBuildings.includes(id)) profile.completedBuildings.push(id);
-  setProfile(profile);
-  showToast(`${chapter.title} saved to the Founder Notebook.`);
-  closeChapterModal();
-  render();
 }
 
 function renderNotebook() {
   const profile = activeProfile();
-  const business = currentBusiness(profile) || { title: "Not chosen yet", type: "Not chosen", product: "Not chosen" };
-  const entries = CHAPTERS.filter((chapter) => String(profile.notebook[chapter.id] || "").trim());
+  const entries = WORKBOOKS.filter((book) => String(profile?.notebook?.[book.id] || "").trim());
   return `
-    <main class="screen">
+    <main class="screen notebook-screen">
       <section class="screen-header">
         <span class="kicker">Founder Notebook</span>
         <h1>${escapeHtml(profile.name)}'s Founder Notebook</h1>
-        <p>A record of chapter notes, business ideas, and parent-guided discussion.</p>
+        <p>Your workbook notes, queued topics, and own business idea live here.</p>
       </section>
       <section class="notebook-grid">
+        <form class="notebook-page founder-form" data-founder-form>
+          <span class="kicker">My Business Idea</span>
+          <label>Business name <input name="businessName" maxlength="40" value="${escapeHtml(profile.founderBusiness.name)}" placeholder="Bookmark Shop" data-testid="input-business-name" /></label>
+          <label>Product or service <input name="businessOffer" maxlength="60" value="${escapeHtml(profile.founderBusiness.offer)}" placeholder="Handmade bookmarks" data-testid="input-business-offer" /></label>
+          <label>Customer <input name="businessCustomer" maxlength="60" value="${escapeHtml(profile.founderBusiness.customer)}" placeholder="Readers at co-op" data-testid="input-business-customer" /></label>
+          <label>Starter supplies <input name="businessSupplies" maxlength="80" value="${escapeHtml(profile.founderBusiness.supplies)}" placeholder="Paper, markers, ribbon" data-testid="input-business-supplies" /></label>
+          <button class="primary-button" type="submit" data-testid="button-save-business-idea">Save Business Idea</button>
+        </form>
         <div class="notebook-page">
-          <span class="kicker">Business Example</span>
+          <span class="kicker">Town Progress</span>
           <div class="ledger-list">
-            <div class="ledger-row"><span>Business</span><strong>${escapeHtml(business.title)}</strong></div>
-            <div class="ledger-row"><span>Type</span><strong>${escapeHtml(business.type)}</strong></div>
-            <div class="ledger-row"><span>Offer</span><strong>${escapeHtml(business.product)}</strong></div>
-            <div class="ledger-row"><span>Chapters visited</span><strong>${visitedCount(profile)} of ${CHAPTERS.length}</strong></div>
+            <div class="ledger-row"><span>Workbooks complete</span><strong>${completedCount(profile)} of ${readyWorkbooks().length}</strong></div>
+            <div class="ledger-row"><span>Future workbooks queued</span><strong>${queuedCount(profile)}</strong></div>
+            <div class="ledger-row"><span>Notebook answers</span><strong>${notebookCount(profile)}</strong></div>
           </div>
-        </div>
-        <div class="notebook-page">
-          <span class="kicker">Chapter Map</span>
-          <div class="ledger-list">${CHAPTERS.map((chapter) => `<span class="badge-chip">${profile.completedBuildings.includes(chapter.id) ? "✓" : "○"} ${chapter.number}. ${escapeHtml(chapter.title)}</span>`).join("")}</div>
         </div>
       </section>
       <section class="notebook-page">
-        <h2>Saved Chapter Answers</h2>
+        <h2>Saved Workbook Answers</h2>
         <div class="ledger-list">
-          ${entries.length ? entries.map((chapter) => `<div class="notebook-entry"><strong>${chapter.number}. ${escapeHtml(chapter.title)}</strong><p>${escapeHtml(profile.notebook[chapter.id])}</p></div>`).join("") : `<div class="empty-note">Notebook answers will appear here after a chapter is saved.</div>`}
+          ${entries.length ? entries.map((book) => `<div class="notebook-entry"><strong>${book.number}. ${escapeHtml(book.workbookTitle)}</strong><p>${escapeHtml(profile.notebook[book.id])}</p></div>`).join("") : `<div class="empty-note">Notebook answers will appear here after a workbook is saved.</div>`}
         </div>
       </section>
     </main>
@@ -973,21 +940,20 @@ function renderParentGuide() {
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Parent Guide</span>
-        <h1>How to teach Business Basics Atlas</h1>
-        <p>This app teaches the first ideas of business through a guided Main Street map, short readings, and Founder Notebook prompts.</p>
+        <h1>How Founder Town works</h1>
+        <p>Founder Town uses the Expedition Atlas pattern: farthest view first, tap a place, open a workbook, or queue a future workbook.</p>
       </section>
       <section class="parent-card">
         <h2>What this teaches</h2>
-        <p>SAVE Small Town Business teaches children the first ideas of entrepreneurship through guided lessons: finding a need, creating a product or service, testing an idea, planning costs, setting prices, tracking money in and money out, keeping records, learning setup words, and knowing when grown-ups need expert help.</p>
+        <p>SAVE Small Town Business teaches children the first ideas of entrepreneurship through play: finding a need, creating a product or service, buying supplies, setting prices, serving customers, tracking money in and money out, finding profit, saving, reinvesting, and understanding a simple civic version of taxes.</p>
+        <div class="pull-note">The Town Share activity is not tax or legal advice. It is a child-friendly model showing that businesses keep records and contribute to shared community needs.</div>
         <div class="pull-note">This workbook is for learning only. It is not legal, tax, payroll, or accounting advice. A real business owner should ask a qualified professional and check federal, state, and local rules.</div>
       </section>
       <section class="grid">
-        ${DISTRICTS.map((district) => `
+        ${groupByDistrict().map(([district, books]) => `
           <div class="parent-card">
-            <span class="kicker">${district.icon} ${escapeHtml(district.name)}</span>
-            <h2>${escapeHtml(district.sign)}</h2>
-            <p>${escapeHtml(district.blurb)}</p>
-            <div class="ledger-list">${chaptersFor(district.id).map((c) => `<div class="ledger-row"><span>${c.number}. ${escapeHtml(c.title)}</span><strong>${escapeHtml(c.grownWord)}</strong></div>`).join("")}</div>
+            <span class="kicker">${escapeHtml(district)}</span>
+            <div class="ledger-list">${books.map((book) => `<div class="ledger-row"><span>${book.number}. ${escapeHtml(book.workbookTitle)}</span><strong>${book.status === "ready" ? "ready" : "queue"}</strong></div>`).join("")}</div>
           </div>
         `).join("")}
       </section>
@@ -1005,8 +971,8 @@ function renderGrowthPath() {
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Big Map Path</span>
-        <h1>The business map can grow later.</h1>
-        <p>V1 focuses on Business Basics. Future volumes can grow from a first Main Street idea to a bigger business map.</p>
+        <h1>Founder Town can grow beyond Main Street.</h1>
+        <p>V1 focuses on the first town. Future volumes can grow toward bigger business systems.</p>
       </section>
       <section class="parent-card">
         <div class="path-list">
@@ -1027,7 +993,7 @@ function renderSources() {
     <main class="screen">
       <section class="screen-header">
         <span class="kicker">Sources & Licensing</span>
-        <h1>Business Basics source notes</h1>
+        <h1>Founder Town source notes</h1>
         <p>V1 uses original illustrated CSS/SVG visuals. No stock photos are used.</p>
       </section>
       <section class="parent-card">
@@ -1043,7 +1009,7 @@ function renderSources() {
         </div>
       </section>
       <section class="parent-card">
-        <h2>Future photo policy</h2>
+        <h2>Image policy</h2>
         <p>Future versions may use real business artifacts only from verified commercial-safe sources such as Library of Congress Free to Use and Reuse, Smithsonian Open Access / CC0, National Archives public-domain records, U.S. federal public-domain sources, or clearly licensed Wikimedia Commons files.</p>
       </section>
     </main>
@@ -1055,21 +1021,37 @@ function wireEvents() {
     button.addEventListener("click", () => {
       const action = button.dataset.action;
       if (action === "start") {
-        const profile = activeProfile();
-        view = !profile ? "profiles" : currentBusiness(profile) ? "map" : "business";
+        if (activeProfile()) {
+          view = "town";
+        } else if (hasSharedProfiles()) {
+          view = "welcome";
+          window.ProfileAPI.openPicker?.({ allowClose: false });
+        } else {
+          view = "profiles";
+        }
       }
-      if (action === "profiles") view = "profiles";
-      if (action === "business") view = "business";
-      if (action === "creator") view = "creator";
-      if (action === "map") view = "map";
+      if (action === "profiles") {
+        if (hasSharedProfiles()) {
+          window.ProfileAPI.openPicker?.({ allowClose: true });
+          return;
+        }
+        view = "profiles";
+      }
+      if (action === "town") view = activeProfile() ? "town" : "welcome";
       if (action === "notebook") view = "notebook";
       if (action === "parent") view = "parent";
       if (action === "growth") view = "growth";
       if (action === "sources") view = "sources";
-      if (action !== "close-chapter") {
-        closeChapterModal();
-        render();
+      if (action === "library") drawerOpen = true;
+      if (action === "close-library") drawerOpen = false;
+      if (action === "open-workbook") {
+        activePlaceId = button.dataset.workbook;
+        view = "workbook";
       }
+      if (action === "queue-workbook") toggleQueue(button.dataset.workbook);
+      if (action === "mark-done") markWorkbookDone(button.dataset.workbook, true);
+      if (action === "save-workbook") saveWorkbook(button.dataset.workbook);
+      if (!["queue-workbook", "mark-done", "save-workbook"].includes(action)) render();
     });
   });
 
@@ -1077,7 +1059,22 @@ function wireEvents() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     createProfile(form.get("profileName"));
-    view = "business";
+    view = "town";
+    render();
+  });
+
+  document.querySelector("[data-founder-form]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const profile = activeProfile();
+    const form = new FormData(event.currentTarget);
+    profile.founderBusiness = {
+      name: cleanName(form.get("businessName")),
+      offer: cleanName(form.get("businessOffer")),
+      customer: cleanName(form.get("businessCustomer")),
+      supplies: cleanName(form.get("businessSupplies")),
+    };
+    setProfile(profile);
+    showToast("Business idea saved.");
     render();
   });
 
@@ -1085,7 +1082,7 @@ function wireEvents() {
     button.addEventListener("click", () => {
       appState.activeProfileId = button.dataset.profileId;
       saveRootState();
-      view = currentBusiness(activeProfile()) ? "map" : "business";
+      view = "town";
       render();
     });
   });
@@ -1093,103 +1090,102 @@ function wireEvents() {
   document.querySelectorAll("[data-shared-profile-id]").forEach((button) => {
     button.addEventListener("click", () => {
       window.ProfileAPI.setActive?.(button.dataset.sharedProfileId);
-      view = currentBusiness(activeProfile()) ? "map" : "business";
+      view = "town";
       render();
     });
   });
 
-  document.querySelectorAll("[data-business]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const profile = activeProfile();
-      profile.selectedBusiness = button.dataset.business;
-      profile.businessName = "";
-      setProfile(profile);
-      selectedDistrict = "idea";
-      view = "map";
+  document.querySelectorAll("[data-place]").forEach((button) => {
+    const selectPlace = () => {
+      activePlaceId = button.dataset.place;
+      drawerOpen = false;
+      view = "town";
       render();
-    });
-  });
-
-  document.querySelector("[data-creator-form]")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const profile = activeProfile();
-    const shopName = cleanName(form.get("shopName"));
-    profile.selectedBusiness = "custom";
-    profile.businessName = shopName;
-    profile.customBusiness = {
-      shopName,
-      shopType: cleanName(form.get("shopType")),
-      product: cleanName(form.get("product")),
-      supplies: [form.get("supply1"), form.get("supply2"), form.get("supply3")].map(cleanName),
-      icon: tempIcon,
-      price: Math.max(1, Number(form.get("price")) || 1),
     };
-    setProfile(profile);
-    selectedDistrict = "idea";
-    view = "map";
-    render();
-  });
-
-  document.querySelectorAll("[data-icon]").forEach((button) => {
-    button.addEventListener("click", () => {
-      tempIcon = button.dataset.icon;
-      render();
+    button.addEventListener("click", selectPlace);
+    button.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectPlace();
+      }
     });
   });
 
-  document.querySelectorAll("[data-district]").forEach((button) => {
-    button.addEventListener("click", () => {
-      selectedDistrict = button.dataset.district;
-      render();
-    });
-  });
-
-  document.querySelectorAll("[data-chapter]").forEach((button) => {
-    button.addEventListener("click", () => {
-      activeChapterId = button.dataset.chapter;
-      renderChapterModal(activeChapterId);
-    });
-  });
+  document.querySelector("[data-notebook-field]")?.addEventListener("input", () => {});
 }
 
-document.addEventListener("click", (event) => {
-  const quick = event.target.closest("[data-quick-note]");
-  if (quick) {
-    const textarea = document.querySelector("[data-testid='textarea-chapter-note']");
-    if (textarea) textarea.value = quick.dataset.quickNote || "";
-    document.querySelectorAll("[data-quick-note]").forEach((el) => el.classList.remove("selected"));
-    quick.classList.add("selected");
+function toggleQueue(id) {
+  const profile = activeProfile();
+  const book = getWorkbook(id);
+  if (!profile || !book || book.status === "ready") return;
+  const next = new Set(profile.queuedWorkbooks);
+  if (next.has(id)) {
+    next.delete(id);
+    showToast(`${book.workbookTitle} removed from the queue.`);
+  } else {
+    next.add(id);
+    showToast(`${book.workbookTitle} added to the workbook queue.`);
   }
-  const save = event.target.closest("[data-chapter-save]");
-  if (save) saveChapter(save.dataset.chapterSave);
-});
-
-function chaptersFor(districtId) {
-  return CHAPTERS.filter((chapter) => chapter.district === districtId);
+  profile.queuedWorkbooks = [...next];
+  setProfile(profile);
+  render();
 }
 
-function getDistrict(id) {
-  return DISTRICTS.find((district) => district.id === id) || DISTRICTS[0];
+function markWorkbookDone(id, rerender = true) {
+  const profile = activeProfile();
+  const book = getWorkbook(id);
+  if (!profile || !book || book.status !== "ready") return;
+  if (!profile.completedWorkbooks.includes(id)) profile.completedWorkbooks.push(id);
+  setProfile(profile);
+  showToast(`${book.workbookTitle} marked done.`);
+  if (rerender) render();
 }
 
-function getChapter(id) {
-  return CHAPTERS.find((chapter) => chapter.id === id);
+function saveWorkbook(id) {
+  const profile = activeProfile();
+  const book = getWorkbook(id);
+  if (!profile || !book) return;
+  const textarea = document.querySelector(`[data-notebook-field="${CSS.escape(id)}"]`);
+  const value = textarea ? textarea.value.trim() : "";
+  if (value) profile.notebook[id] = value;
+  if (!profile.completedWorkbooks.includes(id)) profile.completedWorkbooks.push(id);
+  setProfile(profile);
+  showToast(`${book.workbookTitle} saved to the Founder Notebook.`);
+  render();
 }
 
-function visitedCount(profile) {
-  return (profile?.completedBuildings || []).filter((id) => getChapter(id)).length;
+function workbookStatus(book, profile) {
+  if (profile?.completedWorkbooks?.includes(book.id)) return "done";
+  if (book.status === "ready") return "ready";
+  if (profile?.queuedWorkbooks?.includes(book.id)) return "queued";
+  return "queue";
+}
+
+function readyWorkbooks() {
+  return WORKBOOKS.filter((book) => book.status === "ready");
+}
+
+function groupByDistrict() {
+  return [...new Set(WORKBOOKS.map((book) => book.district))].map((district) => [
+    district,
+    WORKBOOKS.filter((book) => book.district === district),
+  ]);
+}
+
+function getWorkbook(id) {
+  return WORKBOOKS.find((book) => book.id === id);
+}
+
+function completedCount(profile) {
+  return (profile?.completedWorkbooks || []).filter(getWorkbook).length;
+}
+
+function queuedCount(profile) {
+  return (profile?.queuedWorkbooks || []).filter(getWorkbook).length;
 }
 
 function notebookCount(profile) {
   return Object.values(profile?.notebook || {}).filter((value) => String(value || "").trim()).length;
-}
-
-function withBusiness(text, business) {
-  return escapeHtml(text)
-    .replaceAll("{business}", escapeHtml(business.title))
-    .replaceAll("{product}", escapeHtml(business.product))
-    .replaceAll("{type}", escapeHtml(business.type));
 }
 
 function showToast(message) {
@@ -1207,16 +1203,20 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;");
 }
 
+function escapeSvg(value) {
+  return escapeHtml(value).replace(/'/g, "&apos;");
+}
+
 window.addEventListener("load", () => {
   if (hasSharedProfiles()) {
     window.ProfileAPI.onChange?.(() => {
-      activeChapterId = null;
-      view = currentBusiness(activeProfile()) ? "map" : "business";
+      view = "town";
+      drawerOpen = false;
       render();
     });
     if (!window.ProfileAPI.getActive?.()) {
-      view = "profiles";
-      window.ProfileAPI.openPicker?.({ allowClose: true });
+      view = "welcome";
+      window.ProfileAPI.openPicker?.({ allowClose: false });
     }
   } else if (!activeProfile()) {
     view = "welcome";
