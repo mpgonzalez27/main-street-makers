@@ -942,8 +942,12 @@ function worldSvg(interactive = true, profile = activeProfile()) {
         <filter id="worldShadow-${suffix}" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="1.2" stdDeviation="1.4" flood-color="#241A12" flood-opacity=".17"/>
         </filter>
+        <filter id="cartoonLift-${suffix}" x="-25%" y="-30%" width="155%" height="165%">
+          <feDropShadow dx="0.55" dy="1.15" stdDeviation="0.75" flood-color="#241A12" flood-opacity=".18"/>
+        </filter>
       </defs>
       <rect x="2" y="2" width="96" height="96" rx="12" fill="url(#worldPaper-${suffix})" stroke="#241A12" stroke-opacity=".16"/>
+      <path class="map-vignette" d="M9 8h82c4 0 7 3 7 7v70c0 4-3 7-7 7H9c-4 0-7-3-7-7V15c0-4 3-7 7-7z" fill="none"/>
       <path class="map-zone map-green" d="M5 9 C18 3 30 8 41 10 C55 13 70 5 86 8 C96 10 99 20 94 31 C88 43 76 42 64 38 C52 34 41 39 29 35 C16 31 8 25 5 9z" fill="url(#mapGrass-${suffix})"/>
       <path class="map-zone map-town" d="M31 31 C42 23 58 23 69 31 C78 38 78 50 69 58 C57 68 39 65 28 55 C20 47 21 38 31 31z" fill="#EEDDBF"/>
       <path class="map-zone map-services" d="M60 40 C72 35 89 39 94 51 C97 61 91 70 80 71 C66 73 58 64 58 52 C58 47 58 43 60 40z" fill="#D9E0DA"/>
@@ -953,6 +957,12 @@ function worldSvg(interactive = true, profile = activeProfile()) {
       <path class="map-water" d="M5 18 C12 20 15 27 17 34 C19 41 24 44 25 50 C14 50 7 47 5 41z" fill="url(#mapWater-${suffix})" opacity=".78"/>
       <path class="map-field-rows" d="M5 67 C15 60 31 62 39 72 C45 81 38 94 22 95 C10 95 4 85 5 67z" fill="url(#fieldRows-${suffix})"/>
       <path class="map-block-grid" d="M31 31 C42 23 58 23 69 31 C78 38 78 50 69 58 C57 68 39 65 28 55 C20 47 21 38 31 31z" fill="url(#townBlocks-${suffix})"/>
+      <g class="terrain-highlights" opacity=".58">
+        <path d="M11 15 C21 11 30 15 39 17" fill="none" stroke="#FFF8E8" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M67 16 C76 12 87 15 91 23" fill="none" stroke="#FFF8E8" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M63 46 C71 42 83 44 90 52" fill="none" stroke="#FFF8E8" stroke-width="1" stroke-linecap="round"/>
+        <path d="M10 45 C16 39 29 40 35 47" fill="none" stroke="#FFF8E8" stroke-width=".9" stroke-linecap="round"/>
+      </g>
       <g class="world-roads">
         <path class="road-shadow" d="M49 92 C49 77 52 67 51 55 C50 43 50 31 49 11"/>
         <path class="world-road road-main" d="M49 92 C49 77 52 67 51 55 C50 43 50 31 49 11"/>
@@ -965,6 +975,15 @@ function worldSvg(interactive = true, profile = activeProfile()) {
         <path class="world-road-line thin" d="M51 53 C63 49 72 51 82 57"/>
         <path class="world-road-line thin" d="M55 42 C62 34 70 28 82 25"/>
         <path class="world-road-line thin" d="M43 63 C34 68 26 75 20 85"/>
+      </g>
+      <g class="map-cast-shadows" opacity=".38">
+        <ellipse cx="52" cy="84" rx="16" ry="4.2"/>
+        <ellipse cx="53" cy="51" rx="15" ry="3.5"/>
+        <ellipse cx="81" cy="38" rx="12" ry="3.2"/>
+        <ellipse cx="76" cy="61" rx="13" ry="3.3"/>
+        <ellipse cx="23" cy="63" rx="13" ry="3.1"/>
+        <ellipse cx="21" cy="88" rx="13" ry="3.2"/>
+        <ellipse cx="51" cy="23" rx="11" ry="2.9"/>
       </g>
       <g class="map-detail-buildings" filter="url(#worldShadow-${suffix})">
         <g class="map-building school-building">
@@ -1006,6 +1025,71 @@ function worldSvg(interactive = true, profile = activeProfile()) {
           <path d="M59 18h8l3 3h-11z" fill="#F7F0DF"/>
           <circle cx="61" cy="22.5" r="1" fill="#241A12" opacity=".55"/>
           <circle cx="68" cy="22.5" r="1" fill="#241A12" opacity=".55"/>
+        </g>
+      </g>
+      <g class="map-cartoon-toppers" filter="url(#cartoonLift-${suffix})">
+        <g class="schoolhouse-depth">
+          <path class="wall-side" d="M62 70l4.6 3.2v12.2L62 83z" fill="#D8CCB1"/>
+          <path class="wall-front" d="M38 70h24v13H38z" fill="#FFF8E8"/>
+          <path class="roof-side red" d="M50 58l16 12l-4 3l-12-8.2z" fill="#8F3426"/>
+          <path class="roof-face red" d="M34 70h32L50 58z" fill="#C85A45"/>
+          <path class="trim" d="M38 70h24M42 74h5M55 74h4" stroke="#241A12" stroke-opacity=".24" stroke-width=".45" stroke-linecap="round"/>
+          <path class="door" d="M47 75h6v8h-6z" fill="#E9DCC4"/>
+          <path class="window" d="M41 74h4v4h-4zM55 74h4v4h-4z" fill="#C9DCE3"/>
+          <path d="M50 61v-4" stroke="#241A12" stroke-opacity=".35" stroke-width=".55" stroke-linecap="round"/>
+          <circle cx="50" cy="63.6" r="1.5" fill="#D7A84A" stroke="#FFF8E8" stroke-width=".5"/>
+        </g>
+        <g class="mainstreet-depth">
+          <path class="wall-front" d="M39 40h23v10H39z" fill="#FFF8E8"/>
+          <path class="wall-side" d="M62 40l3 2.2v10l-3-2.2z" fill="#D8CCB1"/>
+          <path class="roof-side blue" d="M37 39h27l-2 3H39z" fill="#335C7E"/>
+          <path class="awning" d="M40 42h21v3H40z" fill="#5E7FA3"/>
+          <path class="stripe" d="M43 42v3M48 42v3M53 42v3M58 42v3" stroke="#FFF8E8" stroke-width=".65"/>
+          <path class="door" d="M49 45h3.8v5h-3.8z" fill="#E9DCC4"/>
+          <path class="window" d="M41 45h5v3h-5zM56 45h4.5v3h-4.5z" fill="#C9DCE3"/>
+          <path class="sign-post" d="M51 35v4" stroke="#6B5A46" stroke-width=".5"/>
+        </g>
+        <g class="products-depth">
+          <path class="crate" d="M15 57h7v5h-7zM24 56h7v6h-7z" fill="#C8A978"/>
+          <path class="tent" d="M16 50h10l-1.5 4H17.5z" fill="#D7A84A"/>
+          <path class="tent red" d="M25 49h10l-1.5 4h-7z" fill="#B84A32"/>
+          <path class="stall" d="M17 54h7v5h-7zM26 53h7v6h-7z" fill="#FFF8E8"/>
+          <circle cx="17" cy="60.2" r=".7" fill="#2F5D46"/><circle cx="20" cy="60.3" r=".7" fill="#B84A32"/><circle cx="29" cy="60.2" r=".7" fill="#D7A84A"/>
+        </g>
+        <g class="services-depth">
+          <path class="wall-front" d="M68 51h17v10H68z" fill="#FFF8E8"/>
+          <path class="wall-side" d="M85 51l3 2.1v9.9L85 61z" fill="#D8CCB1"/>
+          <path class="roof-face green" d="M67 50h20l-2 3H69z" fill="#2F5D46"/>
+          <path class="window" d="M70 54h4v4h-4zM78 54h4v4h-4z" fill="#C9DCE3"/>
+          <path class="door" d="M74.8 54h3v7h-3z" fill="#E9DCC4"/>
+          <path class="service-cart" d="M88 61h4.8l1 1.8h-6.6z" fill="#5E7FA3"/>
+          <circle cx="88.6" cy="63.2" r=".7" fill="#241A12" opacity=".65"/><circle cx="92.5" cy="63.2" r=".7" fill="#241A12" opacity=".65"/>
+        </g>
+        <g class="farm-depth">
+          <path class="barn-side" d="M27 77l4 2.5v9l-4-2.5z" fill="#B99040"/>
+          <path class="barn-front" d="M14 77h13v9H14z" fill="#FFF8E8"/>
+          <path class="roof-face gold" d="M13 77l7.5-7 7.5 7z" fill="#D7A84A"/>
+          <path class="roof-side gold" d="M20.5 70l7.5 7l3 2.2l-8-4.6z" fill="#9B762C"/>
+          <path class="door" d="M18 81h5v5h-5z" fill="#E9DCC4"/>
+          <path class="crop" d="M9 76c4 .9 8 .9 12-.2M8 80c5 1 11 1 17-.4M9 84c5 1.2 12 1.1 18-.2" stroke="#6F8A3D" stroke-width=".7" stroke-linecap="round"/>
+          <path class="sprout" d="M31 75c.4-1.4 1.4-2.4 2.7-2.9M31 78c.6-1.2 1.7-2.1 3.1-2.5" stroke="#2F5D46" stroke-width=".55" stroke-linecap="round"/>
+        </g>
+        <g class="maker-depth">
+          <path class="wall-front" d="M70 25h18v11H70z" fill="#FFF8E8"/>
+          <path class="wall-side" d="M88 25l3.1 2.4v10.8L88 36z" fill="#D7CDDD"/>
+          <path class="roof-face purple" d="M69 25h20l-4-4-4 4-4-4-4 4z" fill="#6E557E"/>
+          <path class="roof-side purple" d="M85 21l4 4l2.2 2.2l-4.2-2.2z" fill="#503A62"/>
+          <path class="window" d="M73 29h3v4h-3zM80 29h3v4h-3z" fill="#C9DCE3"/>
+          <path class="door" d="M84 29h2.6v7h-2.6z" fill="#E9DCC4"/>
+          <path class="smoke" d="M76 18c1.1-1.3 3.1-1.2 3.8.2M83.5 15.8c1.3-1.1 3.4-.6 3.8 1.1" fill="none" stroke="#8C7B73" stroke-opacity=".48" stroke-width=".75" stroke-linecap="round"/>
+        </g>
+        <g class="growth-depth">
+          <path class="wall-front" d="M42 14h15v8H42z" fill="#FFF8E8"/>
+          <path class="wall-side" d="M57 14l3 2.1v8L57 22z" fill="#D8CCB1"/>
+          <path class="roof-face blue" d="M41 14h17l-2 2.5H43z" fill="#5E7FA3"/>
+          <path class="truck" d="M59 18h8l3 3h-11z" fill="#FFF8E8"/>
+          <path d="M62 19.2h3" stroke="#5E7FA3" stroke-width=".55" stroke-linecap="round"/>
+          <circle cx="61" cy="22.5" r="1" fill="#241A12" opacity=".6"/><circle cx="68" cy="22.5" r="1" fill="#241A12" opacity=".6"/>
         </g>
       </g>
       <g class="map-detail-nature">

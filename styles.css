@@ -1749,7 +1749,9 @@ textarea {
   min-height: 35rem;
   border-radius: var(--radius-lg);
   background: #eadcbd;
-  box-shadow: inset 0 0 0 1px rgba(36, 26, 18, 0.08);
+  box-shadow:
+    inset 0 0 0 1px rgba(36, 26, 18, 0.08),
+    inset 0 -18px 38px rgba(139, 109, 50, 0.12);
 }
 
 .mini-town-preview .founder-town-map,
@@ -1813,7 +1815,14 @@ textarea {
 
 .map-zone {
   stroke: rgba(36, 26, 18, 0.08);
+  stroke-width: 0.55;
+  filter: drop-shadow(0 0.8px 0.7px rgba(36, 26, 18, 0.07));
+}
+
+.map-vignette {
+  stroke: rgba(36, 26, 18, 0.1);
   stroke-width: 0.45;
+  filter: drop-shadow(0 1px 1px rgba(36, 26, 18, 0.08));
 }
 
 .map-town {
@@ -1826,7 +1835,8 @@ textarea {
 }
 
 .map-field-rows,
-.map-block-grid {
+.map-block-grid,
+.terrain-highlights {
   pointer-events: none;
 }
 
@@ -1843,8 +1853,9 @@ textarea {
 }
 
 .world-road {
-  stroke: #c8a978;
+  stroke: #b89355;
   stroke-width: 7.9;
+  filter: drop-shadow(0 0.6px 0 rgba(255, 248, 232, 0.5));
 }
 
 .world-road.road-main {
@@ -1857,8 +1868,8 @@ textarea {
 
 .world-road-line {
   stroke: rgba(255, 248, 232, 0.95);
-  stroke-width: 2.25;
-  stroke-dasharray: 4.5 4.2;
+  stroke-width: 2.15;
+  stroke-dasharray: 4.2 4.5;
 }
 
 .world-road-line.thin {
@@ -1871,11 +1882,13 @@ textarea {
   fill: #fff8e8;
   stroke: rgba(36, 26, 18, 0.16);
   stroke-width: 0.35;
+  opacity: 0.45;
 }
 
 .map-detail-buildings .roof {
   stroke: rgba(36, 26, 18, 0.15);
   stroke-width: 0.35;
+  opacity: 0.35;
 }
 
 .map-detail-buildings .roof.red {
@@ -1900,6 +1913,58 @@ textarea {
 
 .map-detail-nature {
   pointer-events: none;
+}
+
+.map-cast-shadows {
+  fill: #5B4731;
+  filter: blur(0.25px);
+  pointer-events: none;
+}
+
+.map-cartoon-toppers {
+  pointer-events: none;
+}
+
+.map-cartoon-toppers path,
+.map-cartoon-toppers circle {
+  vector-effect: non-scaling-stroke;
+}
+
+.map-cartoon-toppers .wall-front,
+.map-cartoon-toppers .wall-side,
+.map-cartoon-toppers .barn-front,
+.map-cartoon-toppers .barn-side,
+.map-cartoon-toppers .stall,
+.map-cartoon-toppers .crate,
+.map-cartoon-toppers .truck {
+  stroke: rgba(36, 26, 18, 0.18);
+  stroke-width: 0.32;
+}
+
+.map-cartoon-toppers .roof-face,
+.map-cartoon-toppers .roof-side,
+.map-cartoon-toppers .tent {
+  stroke: rgba(36, 26, 18, 0.18);
+  stroke-width: 0.34;
+  stroke-linejoin: round;
+}
+
+.map-cartoon-toppers .window {
+  stroke: rgba(36, 26, 18, 0.12);
+  stroke-width: 0.25;
+}
+
+.map-cartoon-toppers .door {
+  stroke: rgba(36, 26, 18, 0.14);
+  stroke-width: 0.28;
+}
+
+.map-cartoon-toppers .trim,
+.map-cartoon-toppers .stripe,
+.map-cartoon-toppers .crop,
+.map-cartoon-toppers .sprout,
+.map-cartoon-toppers .smoke {
+  fill: none;
 }
 
 .area-hit {
@@ -1935,7 +2000,7 @@ textarea {
 }
 
 .area-map-pin .pin-ring {
-  fill: rgba(255, 248, 232, 0.82);
+  fill: rgba(255, 248, 232, 0.74);
   stroke: rgba(36, 26, 18, 0.22);
   stroke-width: 0.55;
 }
@@ -1944,6 +2009,7 @@ textarea {
   fill: var(--gold);
   stroke: #fff8e8;
   stroke-width: 0.5;
+  opacity: 0.72;
 }
 
 .area-red .area-map-pin .pin-dot {
@@ -1971,10 +2037,10 @@ textarea {
 }
 
 .area-map-label rect {
-  fill: rgba(255, 248, 232, 0.92);
-  stroke: rgba(36, 26, 18, 0.18);
+  fill: rgba(255, 248, 232, 0.96);
+  stroke: rgba(36, 26, 18, 0.24);
   stroke-width: 0.5;
-  filter: drop-shadow(0 0.8px 0.6px rgba(36, 26, 18, 0.11));
+  filter: drop-shadow(0 1px 0.8px rgba(36, 26, 18, 0.18));
 }
 
 .area-map-label text {
