@@ -31,7 +31,7 @@ const SOURCES = {
   },
   "irs-ein": {
     label: "IRS Employer Identification Number",
-    url: "https://www.irs.gov/businesses/employer-identification-number",
+    url: "https://www.irs.gov/businesses/small-businesses-self-employed/employer-id-numbers",
     note: "What an EIN is and why businesses may need one.",
   },
   "irs-records": {
@@ -58,32 +58,181 @@ const WORKBOOKS = [
     icon: "💡",
     marker: { x: 20, y: 70 },
     color: "gold",
-    sourceIds: ["sba-plan"],
-    bigQuestion: "How does a business help people?",
-    opening: "A business begins with help. A founder notices a need and offers a useful answer.",
+    sourceIds: ["sba-business-plan", "sba-market", "sba-structure", "irs-ein"],
+    readAloudTime: "15–20 minute read-aloud",
+    bigQuestion: "How does a business help people and keep going?",
+    opening: "A business is a planned way to help people. A founder notices a need, makes an offer, keeps a promise, and learns if the work can keep going.",
     sections: [
       {
-        label: "Read Together",
-        title: "The first idea is service",
+        label: "Read-Aloud Chapter",
+        title: "A business starts with a need",
         body: [
-          "A business is a way to serve people with a product or a service.",
-          "A lemonade stand helps thirsty neighbors. A bookmark shop helps readers keep their place. A lawn helper helps a family care for a yard.",
-          "Money matters, but it is not the first idea. The first idea is service. A good founder asks, “Who can I help?”",
+          "Imagine you are walking down a friendly street. You see a family carrying heavy groceries. You see a reader losing her page in a book. You see a neighbor whose garden needs watering. Each person has a need.",
+          "A need is something that would make life better, easier, safer, cleaner, faster, or more joyful. A need can be big, like a family needing a safe place to live. A need can be small, like a thirsty child needing a cold cup of lemonade on a hot day.",
+          "A business begins when someone notices a need and offers a helpful answer. That person might make a thing. That person might do a helpful job. That person might do both. The helpful answer is called an offer.",
+          "This is why business is not only about money. Money is part of business, but it is not the first idea. The first idea is service. A good founder asks, “Who can I help, and what useful thing can I offer?”",
         ],
       },
       {
-        label: "Grown-up business word",
+        label: "Founder Word",
         title: "Business",
-        body: ["A business is a way to help people with a product, a service, or both."],
+        body: [
+          "A business is a planned way to help people with a product, a service, or both. A product is a thing people can buy. A service is a helpful job people can pay for.",
+          "A bookmark shop sells a product. The product is a bookmark. A lawn helper offers a service. The service is helping with yard work. A cookie cart may sell a product and also give a service by packing each cookie neatly for the customer.",
+          "The word planned matters. A lemonade gift for a friend is kind, but it is not really a business. A lemonade stand with cups, a price, a helper, a table, and a plan for serving neighbors is closer to a business.",
+          "A business keeps trying to answer four simple questions. Who needs help? What can we offer? What will it cost to make or do? Will customers think the offer is worth the price?",
+        ],
+      },
+      {
+        label: "Meet the Founder",
+        title: "The helper who begins",
+        body: [
+          "A founder is a person who starts a business idea. A founder does not have to know everything on the first day. A founder begins by noticing, asking, testing, and learning.",
+          "A child can practice founder thinking. You can notice what people need. You can imagine a useful offer. You can make a tiny plan. You can ask safe, respectful questions with a parent nearby.",
+          "A grown-up founder has bigger responsibilities. Grown-ups may need to follow business rules, keep records, register a business name, choose a business structure, get licenses or permits, pay taxes, and ask trained helpers for advice. You do not need to do those grown-up jobs today. You only need to understand the ideas.",
+          "Founder thinking is patient. It does not say, “Everyone will love my idea!” It says, “Let me learn who needs this, why they need it, and how I can serve them well.”",
+        ],
+      },
+      {
+        label: "Customer Watch",
+        title: "Customers are real people",
+        body: [
+          "A customer is a person, family, group, or business that might want or need the offer. A business is not made for “everybody.” It is made for particular people with particular needs.",
+          "If you sell pet treats, your customers might be families who have dogs. If you sell bookmarks, your customers might be readers at co-op, grandparents who give books as gifts, or kids who like colorful supplies.",
+          "Good founders picture the customer clearly. What does the customer care about? What problem is the customer trying to solve? What would make the customer smile and say, “Thank you, that helped me”?",
+          "A customer is never just a money machine. A customer is a neighbor to serve honestly. A strong business treats customers with respect, tells the truth, and keeps promises.",
+        ],
+      },
+      {
+        label: "Offer Builder",
+        title: "Products, services, and bundles",
+        body: [
+          "A product is a thing people buy. A jar of jam is a product. A handmade card is a product. A bag of dog treats is a product. A product can be touched, carried, wrapped, stored, or delivered.",
+          "A service is a helpful job. Washing a car is a service. Pulling weeds is a service. Reading to a younger child is a service. A service is something you do for another person.",
+          "Some businesses offer both. A birthday card table might sell a card, which is a product. It might also write the message neatly inside, which is a service. A garden stand might sell herbs and also help a customer choose which herb smells best.",
+          "The offer should be clear. A customer should be able to understand it in one sentence. “I sell bright bookmarks for readers.” “I water porch plants for neighbors.” “I make birthday cards for families at co-op.” Clear is kind because it helps customers decide.",
+        ],
+      },
+      {
+        label: "Money Moment",
+        title: "The trade",
+        body: [
+          "When a customer buys from a business, a trade happens. The customer gives money. The business gives the product or service. Both sides should understand the trade before it happens.",
+          "Money is not magic. Money helps count value. If a customer pays three coins for a bookmark, the customer is saying, “This bookmark is worth three coins to me.” The founder is saying, “I can make and sell this bookmark for three coins.”",
+          "A fair trade should not trick anyone. The price should be clear. The offer should be clear. The customer should know what is included. The founder should know what it costs to make or do the offer.",
+          "A child business practice can use pretend coins or parent-approved real money. A parent should guide all real selling, especially with food, neighbors, public places, online tools, or anything that needs rules and safety checks.",
+        ],
+      },
+      {
+        label: "Ledger Lesson",
+        title: "Revenue, expenses, and profit",
+        body: [
+          "Revenue means money that comes in from sales. If you sell four bookmarks for two coins each, your revenue is eight coins. Revenue feels exciting because it is money coming into the business.",
+          "Expenses are money the business spends. Paper, markers, ribbon, cups, lemons, stickers, bags, table signs, and parent-approved ingredients can all be expenses. Expenses matter because supplies usually cost money before the first sale happens.",
+          "Profit is what is left after expenses. Here is a simple way to say it: money in minus money out equals profit. If eight coins come in and three coins went out for supplies, five coins are left. That leftover money is profit.",
+          "Profit helps a business keep going. A founder might save profit, buy more supplies, improve the booth, or give part of it to a helpful purpose. A business that spends every coin without a plan may run out of supplies and have to stop.",
+        ],
+      },
+      {
+        label: "Tiny Story",
+        title: "Nora's bookmark basket",
+        body: [
+          "Nora liked books. She noticed something at homeschool co-op. Many kids used folded paper scraps to mark their pages. Some scraps fell out. Some tore. Some were plain and hard to find inside a thick book.",
+          "Nora asked her mom, “Could I make bookmarks for readers?” Her mom said, “Let us think like founders. Who would you help?” Nora answered, “Kids who read chapter books, moms who read aloud, and grandparents who give books as gifts.”",
+          "Next, Nora thought about her offer. She would sell sturdy bookmarks with bright colors and little Scripture verse cards beside them. The bookmarks would be the product. A neat gift envelope would be an extra service because she would pack the bookmark for giving.",
+          "Nora made five test bookmarks first. She did not make fifty. She used cardstock, ribbon, a corner punch, and markers. She wrote down the supplies in a notebook. Her mom helped her count the cost.",
+          "Then Nora asked three safe questions to people her family knew. “Do you use bookmarks?” “What makes a bookmark useful?” “Would you rather have animals, flowers, or simple patterns?” She learned that readers liked sturdy bookmarks and ribbons that were not too long.",
+          "On sale day, Nora put up a clear sign: “Nora's Bookmark Basket: bright bookmarks for busy readers.” Her price was fair. Her table was tidy. When customers came, she smiled, answered questions, and thanked them.",
+          "Afterward, Nora counted revenue, expenses, and profit with her mom. She learned which designs sold first. She saved some coins, bought more cardstock, and wrote a better plan for next time. Nora did not just sell bookmarks. She learned how a business works.",
+        ],
+      },
+      {
+        label: "Test First",
+        title: "Do not build the mountain first",
+        body: [
+          "A founder does not need to build the biggest version of an idea on day one. A wise founder tests small. Testing small means trying a tiny version before spending too much time or money.",
+          "A cookie cart can test three cookie flavors, not thirty. A bracelet booth can test ten bracelets, not a hundred. A lawn helper can help one trusted neighbor with a parent nearby before making a big flyer.",
+          "Testing helps answer important questions. Do customers understand the offer? Do they want it? Is the price fair? Are the supplies too expensive? Is the work safe, kind, and possible?",
+        ],
+      },
+      {
+        label: "Market Clues",
+        title: "Learning what customers need",
+        body: [
+          "Market research means learning about customers before you build a big plan. That sounds like a grown-up phrase, but the idea is simple: ask, watch, listen, and learn.",
+          "A child can practice market research with parent-approved people. You might ask, “What would make this bookmark easier to use?” You might observe which treats people choose first at a family gathering. You might notice that busy parents want gifts that are already wrapped.",
+          "Good questions are open. They do not force the answer you want. “Would you buy my amazing bracelet?” is not as helpful as, “What kind of bracelet would you wear?” or “What makes a bracelet comfortable?”",
+        ],
+      },
+      {
+        label: "Competition Corner",
+        title: "Other choices are not enemies",
+        body: [
+          "Competition means customers have other choices. A customer can buy from your booth, buy from another booth, make the item at home, or decide not to buy anything today.",
+          "Competition is not always bad. It teaches founders. If another booth has a long line, ask why. Is the sign clear? Is the table easy to understand? Is the price fair? Is the product especially useful?",
+          "A business can be different in honest ways. It can be faster, clearer, kinder, safer, prettier, sturdier, more personal, or easier to understand. Different does not mean strange. Different means there is a clear reason the customer might choose it.",
+          "A founder should not copy another person's work. A founder can learn from what customers like, then make an honest offer with their own ideas, own design, and own promise.",
+        ],
+      },
+      {
+        label: "Plan Page",
+        title: "The first business plan",
+        body: [
+          "A business plan is a roadmap. A roadmap helps a traveler know where to go. A business plan helps a founder know what to build, who to serve, what it may cost, and how the business might grow.",
+          "A child-sized business plan can be one page. Write the need. Write the customer. Write the offer. Write the supplies. Write the starting price. Write how you will test the idea. Write one safety rule.",
+          "A grown-up business plan can be much bigger. It may describe the company, customers, products, services, competitors, marketing, money, and goals. The plan can change when a founder learns something true.",
+        ],
+      },
+      {
+        label: "Record Book",
+        title: "Write down what happened",
+        body: [
+          "Records help a founder remember. A record can be a notebook page, a ledger, a receipt folder, or a parent-approved spreadsheet. The job of a record is to tell the truth about what happened.",
+          "A simple record can show the date, what was sold, how much money came in, what supplies were bought, how much money went out, and what was left. This helps the founder see revenue, expenses, and profit.",
+          "Records also help a founder learn. Which product sold first? Which price worked? Which supplies ran out? Grown-up businesses keep records for serious reasons too, including taxes, employees, bank accounts, planning, and rules.",
+        ],
+      },
+      {
+        label: "Grown-Up Setup Desk",
+        title: "Some business jobs need adults",
+        body: [
+          "Some parts of business are grown-up jobs. A real business may need to choose a business structure. A structure is the legal form of the business, such as a sole proprietor, LLC, or corporation. Each structure has different rules, records, taxes, and risks.",
+          "A real business may need to register with a state, follow local rules, get licenses or permits, collect or pay taxes, keep special records, or handle payroll if it has workers. An EIN is a federal tax ID number for a business. Some businesses need one, and some owners may request one for banking or state tax reasons.",
+          "Payroll means the system for paying workers and handling required tax records. If a business hires employees, grown-ups must follow employment and tax rules. These jobs are not for a child to figure out alone.",
+          "For this workbook, you are not choosing a legal structure or filing papers. You are learning the shape of the grown-up map. When a business becomes real, a parent should check federal, state, and local rules and ask a qualified attorney, CPA, payroll provider, or agency when needed.",
+        ],
+      },
+      {
+        label: "Good Business Habits",
+        title: "Honest, safe, and kind",
+        body: [
+          "A good business tells the truth. It does not pretend a product is bigger, safer, faster, or better than it is. It makes the price clear and keeps its promise.",
+          "A good business thinks about safety. Food, pets, tools, yards, public places, and online selling all need parent guidance. Coins can help a business keep going, but trust, service, honesty, and wise planning make the work good.",
+        ],
+      },
+      {
+        label: "Founder Notebook Builder",
+        title: "Write your Founder Sentence",
+        body: [
+          "A Founder Sentence explains the heart of a business idea in one clear line. It has three parts: who you help, what you offer, and why it helps.",
+          "Here is the pattern: “I can help blank by offering blank because blank.” Nora might write, “I can help readers by offering sturdy bookmarks because scraps of paper fall out of books.”",
+          "Try more than one sentence. “I can help neighbors by watering porch plants because plants get thirsty when families are busy.” “I can help gift givers by offering handmade birthday cards because cheerful cards make people feel remembered.”",
+          "A clear Founder Sentence is like a tiny map. It does not answer every business question, but it points you in the right direction.",
+        ],
       },
       {
         label: "Try It",
-        title: "Find a need",
-        body: ["Point to one person your business could help today. What do they need?"],
+        title: "Talk it through",
+        body: [
+          "Say your Founder Sentence out loud to a parent. Ask, “Is the customer clear?” Ask, “Is the offer clear?” Ask, “Does this really help someone?”",
+          "Then circle the part that feels strongest. Maybe the customer is clear, but the offer needs work. Maybe the offer is fun, but the need is not clear yet. That is normal.",
+          "Next, choose one tiny test. You could draw the sign, make one sample, ask three safe questions, count supply costs, or compare two possible prices with pretend coins.",
+          "Today you are not trying to become a grown-up business owner. You are learning how business works: notice a need, serve a customer, make a clear offer, count the money, keep records, and take the next wise step.",
+        ],
       },
     ],
-    prompt: "My business could help people who need...",
-    parentNote: "Start with service. This keeps business from feeling like only buying and selling.",
+    prompt: "My Founder Sentence: I can help ___ by offering ___ because ___.",
+    parentNote: "Start with service, then gently connect the idea to customers, offers, money, records, and grown-up setup. This workbook is for learning only. It is not legal, tax, payroll, or accounting advice. A real business owner should ask a qualified professional and check federal, state, and local rules.",
   },
   {
     id: "customer-corner",
@@ -1379,6 +1528,7 @@ function renderWorkbook(id) {
   }
   const note = profile?.notebook?.[workbook.id] || "";
   const done = profile?.completedWorkbooks?.includes(workbook.id);
+  const sources = (workbook.sourceIds || []).map((sourceId) => SOURCES[sourceId]).filter(Boolean);
   return `
     <main class="reader-shell" data-testid="workbook-reader">
       <section class="workbook-cover">
@@ -1390,6 +1540,7 @@ function renderWorkbook(id) {
           <span class="kicker">Vol. ${workbook.number} · ${escapeHtml(area.shortTitle)} · ${escapeHtml(workbook.district)}</span>
           <h1>${escapeHtml(workbook.workbookTitle)}</h1>
           <p>${escapeHtml(workbook.subtitle)}</p>
+          ${workbook.readAloudTime ? `<div class="reader-meta"><span class="badge-chip">${escapeHtml(workbook.readAloudTime)}</span><span class="badge-chip">Audio-ready lesson</span></div>` : ""}
           <button class="secondary-button" data-action="area" data-testid="button-back-area-reader">Back to ${escapeHtml(area.shortTitle)}</button>
         </div>
       </section>
@@ -1426,6 +1577,21 @@ function renderWorkbook(id) {
         <span class="kicker">Parent Note</span>
         <p>${escapeHtml(workbook.parentNote)}</p>
       </section>
+      ${sources.length ? `
+        <section class="reader-page workbook-sources">
+          <span class="kicker">Source Notes</span>
+          <h2>Official sources used</h2>
+          <div class="ledger-list">
+            ${sources.map((source) => `
+              <div class="source-entry">
+                <strong>${escapeHtml(source.label)}</strong>
+                <p>${escapeHtml(source.note)}</p>
+                <a href="${source.url}" target="_blank" rel="noreferrer">${source.url}</a>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      ` : ""}
     </main>
   `;
 }

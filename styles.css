@@ -2365,6 +2365,13 @@ textarea {
   color: rgba(36, 26, 18, 0.72);
 }
 
+.reader-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
 .mark-done {
   display: inline-flex;
   align-items: center;
@@ -2426,6 +2433,10 @@ textarea {
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-4);
+}
+
+.workbook-sources .ledger-list {
+  margin-top: var(--space-5);
 }
 
 .library-drawer {
