@@ -1,0 +1,122 @@
+[
+  {
+    "id": "00-opening",
+    "title": "Cover and Big Question",
+    "src": "./audio/idea-bench/00-opening.mp3",
+    "transcript": "./audio/idea-bench/00-opening.txt"
+  },
+  {
+    "id": "01-section-1",
+    "title": "A business starts with a need",
+    "src": "./audio/idea-bench/01-section-1.mp3",
+    "transcript": "./audio/idea-bench/01-section-1.txt"
+  },
+  {
+    "id": "02-section-2",
+    "title": "Business",
+    "src": "./audio/idea-bench/02-section-2.mp3",
+    "transcript": "./audio/idea-bench/02-section-2.txt"
+  },
+  {
+    "id": "03-section-3",
+    "title": "The helper who begins",
+    "src": "./audio/idea-bench/03-section-3.mp3",
+    "transcript": "./audio/idea-bench/03-section-3.txt"
+  },
+  {
+    "id": "04-section-4",
+    "title": "Customers are real people",
+    "src": "./audio/idea-bench/04-section-4.mp3",
+    "transcript": "./audio/idea-bench/04-section-4.txt"
+  },
+  {
+    "id": "05-section-5",
+    "title": "Products, services, and bundles",
+    "src": "./audio/idea-bench/05-section-5.mp3",
+    "transcript": "./audio/idea-bench/05-section-5.txt"
+  },
+  {
+    "id": "06-section-6",
+    "title": "The trade",
+    "src": "./audio/idea-bench/06-section-6.mp3",
+    "transcript": "./audio/idea-bench/06-section-6.txt"
+  },
+  {
+    "id": "07-section-7",
+    "title": "Revenue, expenses, and profit",
+    "src": "./audio/idea-bench/07-section-7.mp3",
+    "transcript": "./audio/idea-bench/07-section-7.txt"
+  },
+  {
+    "id": "08-section-8",
+    "title": "Nora's bookmark basket",
+    "src": "./audio/idea-bench/08-section-8.mp3",
+    "transcript": "./audio/idea-bench/08-section-8.txt"
+  },
+  {
+    "id": "09-section-9",
+    "title": "Do not build the mountain first",
+    "src": "./audio/idea-bench/09-section-9.mp3",
+    "transcript": "./audio/idea-bench/09-section-9.txt"
+  },
+  {
+    "id": "10-section-10",
+    "title": "Learning what customers need",
+    "src": "./audio/idea-bench/10-section-10.mp3",
+    "transcript": "./audio/idea-bench/10-section-10.txt"
+  },
+  {
+    "id": "11-section-11",
+    "title": "Other choices are not enemies",
+    "src": "./audio/idea-bench/11-section-11.mp3",
+    "transcript": "./audio/idea-bench/11-section-11.txt"
+  },
+  {
+    "id": "12-section-12",
+    "title": "The first business plan",
+    "src": "./audio/idea-bench/12-section-12.mp3",
+    "transcript": "./audio/idea-bench/12-section-12.txt"
+  },
+  {
+    "id": "13-section-13",
+    "title": "Write down what happened",
+    "src": "./audio/idea-bench/13-section-13.mp3",
+    "transcript": "./audio/idea-bench/13-section-13.txt"
+  },
+  {
+    "id": "14-section-14",
+    "title": "Some business jobs need adults",
+    "src": "./audio/idea-bench/14-section-14.mp3",
+    "transcript": "./audio/idea-bench/14-section-14.txt"
+  },
+  {
+    "id": "15-section-15",
+    "title": "Honest, safe, and kind",
+    "src": "./audio/idea-bench/15-section-15.mp3",
+    "transcript": "./audio/idea-bench/15-section-15.txt"
+  },
+  {
+    "id": "16-section-16",
+    "title": "Write your Founder Sentence",
+    "src": "./audio/idea-bench/16-section-16.mp3",
+    "transcript": "./audio/idea-bench/16-section-16.txt"
+  },
+  {
+    "id": "17-section-17",
+    "title": "Talk it through",
+    "src": "./audio/idea-bench/17-section-17.mp3",
+    "transcript": "./audio/idea-bench/17-section-17.txt"
+  },
+  {
+    "id": "18-founder-notebook",
+    "title": "Founder Notebook",
+    "src": "./audio/idea-bench/18-founder-notebook.mp3",
+    "transcript": "./audio/idea-bench/18-founder-notebook.txt"
+  },
+  {
+    "id": "19-parent-note",
+    "title": "Parent Note",
+    "src": "./audio/idea-bench/19-parent-note.mp3",
+    "transcript": "./audio/idea-bench/19-parent-note.txt"
+  }
+]

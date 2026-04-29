@@ -11,6 +11,8 @@ const speechState = {
   index: 0,
   utterance: null,
   voices: [],
+  mode: "",
+  audio: null,
 };
 
 const SOURCES = {
@@ -527,6 +529,34 @@ const WORKBOOKS = [
     sourceIds: ["sba-business-plan"],
   },
 ];
+
+const AUDIO_LIBRARY = {
+  "idea-bench": {
+    voiceLabel: "Studio voice: Sulafat",
+    chunks: [
+      { title: "Cover and big question", src: "./audio/idea-bench/00-opening.mp3" },
+      { title: "A business starts with a need", src: "./audio/idea-bench/01-section-1.mp3" },
+      { title: "Business", src: "./audio/idea-bench/02-section-2.mp3" },
+      { title: "The helper who begins", src: "./audio/idea-bench/03-section-3.mp3" },
+      { title: "Customers are real people", src: "./audio/idea-bench/04-section-4.mp3" },
+      { title: "Products, services, and bundles", src: "./audio/idea-bench/05-section-5.mp3" },
+      { title: "A business makes a promise", src: "./audio/idea-bench/06-section-6.mp3" },
+      { title: "Money helps the business keep going", src: "./audio/idea-bench/07-section-7.mp3" },
+      { title: "A tiny story: Nora's Bookmark Basket", src: "./audio/idea-bench/08-section-8.mp3" },
+      { title: "How a founder tests an idea", src: "./audio/idea-bench/09-section-9.mp3" },
+      { title: "Clear signs help customers", src: "./audio/idea-bench/10-section-10.mp3" },
+      { title: "Prices should be fair", src: "./audio/idea-bench/11-section-11.mp3" },
+      { title: "Records tell the truth", src: "./audio/idea-bench/12-section-12.mp3" },
+      { title: "Some business jobs are grown-up jobs", src: "./audio/idea-bench/13-section-13.mp3" },
+      { title: "Businesses can help a town", src: "./audio/idea-bench/14-section-14.mp3" },
+      { title: "A business can grow in steps", src: "./audio/idea-bench/15-section-15.mp3" },
+      { title: "What makes a good business?", src: "./audio/idea-bench/16-section-16.mp3" },
+      { title: "Your turn to think like a founder", src: "./audio/idea-bench/17-section-17.mp3" },
+      { title: "Founder Notebook", src: "./audio/idea-bench/18-founder-notebook.mp3" },
+      { title: "Parent note", src: "./audio/idea-bench/19-parent-note.mp3" },
+    ],
+  },
+};
 
 const GROWTH_PATH = [
   ["Founder School", "Learn the first business words."],
@@ -1551,11 +1581,11 @@ function renderWorkbook(id) {
           <span class="kicker">Vol. ${workbook.number} · ${escapeHtml(area.shortTitle)} · ${escapeHtml(workbook.district)}</span>
           <h1>${escapeHtml(workbook.workbookTitle)}</h1>
           <p>${escapeHtml(workbook.subtitle)}</p>
-          ${workbook.readAloudTime ? `<div class="reader-meta"><span class="badge-chip">${escapeHtml(workbook.readAloudTime)}</span><span class="badge-chip">Audio-ready lesson</span></div>` : ""}
+          ${workbook.readAloudTime ? `<div class="reader-meta"><span class="badge-chip">${escapeHtml(workbook.readAloudTime)}</span><span class="badge-chip">${audioLibraryFor(workbook) ? escapeHtml(audioLibraryFor(workbook).voiceLabel) : "Device voice fallback"}</span></div>` : ""}
           <div class="read-aloud-panel" data-speech-panel>
             <div>
               <span class="kicker">Read to me</span>
-              <p data-speech-status>Tap “Read workbook” to hear this lesson out loud. You can pause or stop any time.</p>
+              <p data-speech-status>${audioLibraryFor(workbook) ? "Tap “Read workbook” for studio narration. You can pause or stop any time." : "Tap “Read workbook” to hear this lesson with your device voice."}</p>
             </div>
             <div class="read-aloud-actions">
               <button class="primary-button read-control" data-action="read-workbook" data-workbook="${workbook.id}" data-testid="button-read-workbook">Read workbook</button>
@@ -1987,6 +2017,76 @@ function buildWorkbookSpeechQueue(workbook) {
   ].filter((item) => String(item.text || "").trim());
 }
 
+function audioLibraryFor(workbook) {
+  return AUDIO_LIBRARY[workbook?.id] || null;
+}
+
+function buildWorkbookAudioQueue(workbook) {
+  return (audioLibraryFor(workbook)?.chunks || []).filter((item) => item.src);
+}
+
+function buildOpeningAudioQueue(workbook) {
+  const opening = audioLibraryFor(workbook)?.chunks?.[0];
+  return opening ? [opening] : [];
+}
+
+function buildSectionAudioQueue(workbook, sectionIndex) {
+  const chunk = audioLibraryFor(workbook)?.chunks?.[sectionIndex + 1];
+  return chunk ? [chunk] : [];
+}
+
+function audioSupported() {
+  return typeof window !== "undefined" && typeof Audio !== "undefined";
+}
+
+function startAudioQueue(audioQueue, fallbackQueue, label) {
+  const cleanQueue = (audioQueue || []).filter((item) => item?.src);
+  if (!audioSupported() || !cleanQueue.length) {
+    startSpeechQueue(fallbackQueue, label);
+    return;
+  }
+  stopReading({ silent: true });
+  speechState.active = true;
+  speechState.paused = false;
+  speechState.mode = "audio";
+  speechState.label = label || "Workbook";
+  speechState.queue = cleanQueue.map((item) => ({ title: item.title || label || "Workbook", src: item.src }));
+  speechState.index = 0;
+  playCurrentAudioChunk(fallbackQueue, label);
+}
+
+function playCurrentAudioChunk(fallbackQueue, label) {
+  if (!speechState.active || speechState.mode !== "audio") return;
+  const item = speechState.queue[speechState.index];
+  if (!item) {
+    finishReading();
+    return;
+  }
+  speechState.currentTitle = item.title;
+  const audio = new Audio(item.src);
+  audio.preload = "auto";
+  audio.onplay = () => updateSpeechStatus(`Studio voice reading ${speechState.index + 1} of ${speechState.queue.length}: ${item.title}`);
+  audio.onended = () => {
+    if (!speechState.active || speechState.mode !== "audio") return;
+    speechState.index += 1;
+    playCurrentAudioChunk(fallbackQueue, label);
+  };
+  audio.onerror = () => {
+    updateSpeechStatus("Studio voice could not load here, so this page is using the device voice fallback.");
+    startSpeechQueue(fallbackQueue, label);
+  };
+  speechState.audio = audio;
+  const playPromise = audio.play();
+  if (playPromise?.catch) {
+    playPromise.catch(() => {
+      updateSpeechStatus("Tap the read button again if your browser blocked audio from starting.");
+      speechState.active = false;
+      speechState.paused = false;
+      speechState.audio = null;
+    });
+  }
+}
+
 function startSpeechQueue(queue, label) {
   if (!speechSupported()) {
     updateSpeechStatus("Read-to-me is not available in this browser. Try opening the app in Safari, Chrome, or Edge with sound turned on.");
@@ -1997,9 +2097,14 @@ function startSpeechQueue(queue, label) {
     .map((item) => ({ title: item.title || label || "Workbook", text: String(item.text || "").replace(/\s+/g, " ").trim() }))
     .filter((item) => item.text);
   if (!cleanQueue.length) return;
+  if (speechState.audio) {
+    speechState.audio.pause();
+    speechState.audio = null;
+  }
   window.speechSynthesis.cancel();
   speechState.active = true;
   speechState.paused = false;
+  speechState.mode = "speech";
   speechState.label = label || "Workbook";
   speechState.queue = cleanQueue;
   speechState.index = 0;
@@ -2039,40 +2144,60 @@ function speakCurrentChunk() {
 function readWorkbook(id) {
   const workbook = getWorkbook(id);
   if (!workbook) return;
-  startSpeechQueue(buildWorkbookSpeechQueue(workbook), workbook.workbookTitle);
+  startAudioQueue(buildWorkbookAudioQueue(workbook), buildWorkbookSpeechQueue(workbook), workbook.workbookTitle);
 }
 
 function readWorkbookOpening(id) {
   const workbook = getWorkbook(id);
   if (!workbook) return;
-  startSpeechQueue([{ title: "Big Question", text: buildOpeningSpeech(workbook) }], workbook.workbookTitle);
+  startAudioQueue(buildOpeningAudioQueue(workbook), [{ title: "Big Question", text: buildOpeningSpeech(workbook) }], workbook.workbookTitle);
 }
 
 function readWorkbookSection(id, sectionIndex) {
   const workbook = getWorkbook(id);
   const section = workbook?.sections?.[sectionIndex];
   if (!workbook || !section) return;
-  startSpeechQueue([{ title: section.title, text: buildSectionSpeech(section) }], section.title);
+  startAudioQueue(buildSectionAudioQueue(workbook, sectionIndex), [{ title: section.title, text: buildSectionSpeech(section) }], section.title);
 }
 
 function pauseReading() {
-  if (!speechSupported() || !speechState.active) return;
+  if (!speechState.active) return;
+  if (speechState.mode === "audio" && speechState.audio) {
+    speechState.audio.pause();
+    speechState.paused = true;
+    updateSpeechStatus(`Paused studio voice: ${speechState.currentTitle || speechState.label}`);
+    return;
+  }
+  if (!speechSupported()) return;
   window.speechSynthesis.pause();
   speechState.paused = true;
   updateSpeechStatus(`Paused: ${speechState.currentTitle || speechState.label}`);
 }
 
 function resumeReading() {
-  if (!speechSupported() || !speechState.active) return;
+  if (!speechState.active) return;
+  if (speechState.mode === "audio" && speechState.audio) {
+    speechState.audio.play();
+    speechState.paused = false;
+    updateSpeechStatus(`Studio voice reading: ${speechState.currentTitle || speechState.label}`);
+    return;
+  }
+  if (!speechSupported()) return;
   window.speechSynthesis.resume();
   speechState.paused = false;
   updateSpeechStatus(`Reading: ${speechState.currentTitle || speechState.label}`);
 }
 
 function stopReading(options = {}) {
+  if (speechState.audio) {
+    speechState.audio.pause();
+    speechState.audio.currentTime = 0;
+    speechState.audio = null;
+  }
   if (speechSupported()) window.speechSynthesis.cancel();
   speechState.active = false;
   speechState.paused = false;
+  speechState.mode = "";
   speechState.label = "";
   speechState.currentTitle = "";
   speechState.queue = [];
@@ -2088,6 +2213,8 @@ function finishReading() {
   speechState.queue = [];
   speechState.index = 0;
   speechState.utterance = null;
+  speechState.audio = null;
+  speechState.mode = "";
   updateSpeechStatus(`Finished reading ${label}.`);
 }
 
