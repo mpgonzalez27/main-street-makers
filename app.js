@@ -2,6 +2,16 @@ const STORAGE_KEY = "save_founder_town_v1";
 const LEGACY_STORAGE_KEY = "msm_business_basics_atlas_v2";
 const LOCAL_ROOT_KEY = "save.founderTown.localProfiles.v1";
 const DEFAULT_PROFILE_NAME = "Founder";
+const speechState = {
+  active: false,
+  paused: false,
+  label: "",
+  currentTitle: "",
+  queue: [],
+  index: 0,
+  utterance: null,
+  voices: [],
+};
 
 const SOURCES = {
   "sba-plan": {
@@ -851,6 +861,7 @@ function topbar() {
 }
 
 function render() {
+  stopReading({ silent: true });
   const profile = activeProfile();
   if (!profile && !["welcome", "profiles"].includes(view)) view = hasSharedProfiles() ? "welcome" : "profiles";
   let html = topbar();
@@ -1541,6 +1552,18 @@ function renderWorkbook(id) {
           <h1>${escapeHtml(workbook.workbookTitle)}</h1>
           <p>${escapeHtml(workbook.subtitle)}</p>
           ${workbook.readAloudTime ? `<div class="reader-meta"><span class="badge-chip">${escapeHtml(workbook.readAloudTime)}</span><span class="badge-chip">Audio-ready lesson</span></div>` : ""}
+          <div class="read-aloud-panel" data-speech-panel>
+            <div>
+              <span class="kicker">Read to me</span>
+              <p data-speech-status>Tap “Read workbook” to hear this lesson out loud. You can pause or stop any time.</p>
+            </div>
+            <div class="read-aloud-actions">
+              <button class="primary-button read-control" data-action="read-workbook" data-workbook="${workbook.id}" data-testid="button-read-workbook">Read workbook</button>
+              <button class="secondary-button read-control" data-action="pause-reading" data-testid="button-pause-reading">Pause</button>
+              <button class="secondary-button read-control" data-action="resume-reading" data-testid="button-resume-reading">Resume</button>
+              <button class="secondary-button read-control" data-action="stop-reading" data-testid="button-stop-reading">Stop</button>
+            </div>
+          </div>
           <button class="secondary-button" data-action="area" data-testid="button-back-area-reader">Back to ${escapeHtml(area.shortTitle)}</button>
         </div>
       </section>
@@ -1554,12 +1577,14 @@ function renderWorkbook(id) {
       <section class="reader-page feature-page">
         <span class="kicker">Big Question</span>
         <h2>${escapeHtml(workbook.bigQuestion)}</h2>
+        <div class="page-read-row"><button class="read-page-button" data-action="read-opening" data-workbook="${workbook.id}" data-testid="button-read-opening">Read this page</button></div>
         <p class="lede">${escapeHtml(workbook.opening)}</p>
       </section>
       ${workbook.sections.map((section, index) => `
-        <section class="reader-page workbook-section">
+        <section class="reader-page workbook-section" data-section-index="${index}">
           <span class="kicker">${escapeHtml(section.label)}</span>
           <h2>${escapeHtml(section.title)}</h2>
+          <div class="page-read-row"><button class="read-page-button" data-action="read-section" data-workbook="${workbook.id}" data-section-index="${index}" data-testid="button-read-section-${index}">Read this page</button></div>
           ${section.body.map((p) => `<p>${escapeHtml(p)}</p>`).join("")}
           ${index === 1 ? `<div class="pull-note">Business words are tools. We use them gently, one at a time.</div>` : ""}
         </section>
@@ -1792,7 +1817,13 @@ function wireEvents() {
       if (action === "queue-workbook") toggleQueue(button.dataset.workbook);
       if (action === "mark-done") markWorkbookDone(button.dataset.workbook, true);
       if (action === "save-workbook") saveWorkbook(button.dataset.workbook);
-      if (!["queue-workbook", "mark-done", "save-workbook"].includes(action)) render();
+      if (action === "read-workbook") readWorkbook(button.dataset.workbook);
+      if (action === "read-opening") readWorkbookOpening(button.dataset.workbook);
+      if (action === "read-section") readWorkbookSection(button.dataset.workbook, Number(button.dataset.sectionIndex || 0));
+      if (action === "pause-reading") pauseReading();
+      if (action === "resume-reading") resumeReading();
+      if (action === "stop-reading") stopReading();
+      if (!["queue-workbook", "mark-done", "save-workbook", "read-workbook", "read-opening", "read-section", "pause-reading", "resume-reading", "stop-reading"].includes(action)) render();
     });
   });
 
@@ -1911,6 +1942,161 @@ function saveWorkbook(id) {
   render();
 }
 
+function speechSupported() {
+  return typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+}
+
+function loadSpeechVoices() {
+  if (!speechSupported()) return [];
+  const voices = window.speechSynthesis.getVoices?.() || [];
+  speechState.voices = voices;
+  return voices;
+}
+
+function preferredVoice() {
+  const voices = speechState.voices.length ? speechState.voices : loadSpeechVoices();
+  return (
+    voices.find((voice) => /^en-US/i.test(voice.lang) && /female|samantha|victoria|zira|jenny|aria/i.test(voice.name)) ||
+    voices.find((voice) => /^en/i.test(voice.lang) && voice.default) ||
+    voices.find((voice) => /^en/i.test(voice.lang)) ||
+    voices[0] ||
+    null
+  );
+}
+
+function buildOpeningSpeech(workbook) {
+  return [
+    `Workbook ${workbook.number}. ${workbook.workbookTitle}.`,
+    workbook.subtitle,
+    `Big question. ${workbook.bigQuestion}`,
+    workbook.opening,
+  ].filter(Boolean).join(" ");
+}
+
+function buildSectionSpeech(section) {
+  if (!section) return "";
+  return [section.label, section.title, ...(section.body || [])].filter(Boolean).join(". ");
+}
+
+function buildWorkbookSpeechQueue(workbook) {
+  return [
+    { title: "Cover and big question", text: buildOpeningSpeech(workbook) },
+    ...(workbook.sections || []).map((section) => ({ title: section.title, text: buildSectionSpeech(section) })),
+    { title: "Founder Notebook", text: `Founder Notebook. ${workbook.prompt}` },
+    { title: "Parent note", text: workbook.parentNote },
+  ].filter((item) => String(item.text || "").trim());
+}
+
+function startSpeechQueue(queue, label) {
+  if (!speechSupported()) {
+    updateSpeechStatus("Read-to-me is not available in this browser. Try opening the app in Safari, Chrome, or Edge with sound turned on.");
+    showToast("Read-to-me is not available in this browser.");
+    return;
+  }
+  const cleanQueue = (queue || [])
+    .map((item) => ({ title: item.title || label || "Workbook", text: String(item.text || "").replace(/\s+/g, " ").trim() }))
+    .filter((item) => item.text);
+  if (!cleanQueue.length) return;
+  window.speechSynthesis.cancel();
+  speechState.active = true;
+  speechState.paused = false;
+  speechState.label = label || "Workbook";
+  speechState.queue = cleanQueue;
+  speechState.index = 0;
+  speakCurrentChunk();
+}
+
+function speakCurrentChunk() {
+  if (!speechSupported() || !speechState.active) return;
+  const item = speechState.queue[speechState.index];
+  if (!item) {
+    finishReading();
+    return;
+  }
+  speechState.currentTitle = item.title;
+  const utterance = new SpeechSynthesisUtterance(item.text);
+  const voice = preferredVoice();
+  if (voice) utterance.voice = voice;
+  utterance.lang = voice?.lang || "en-US";
+  utterance.rate = 0.92;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+  utterance.onstart = () => updateSpeechStatus(`Reading ${speechState.index + 1} of ${speechState.queue.length}: ${item.title}`);
+  utterance.onend = () => {
+    if (!speechState.active) return;
+    speechState.index += 1;
+    speakCurrentChunk();
+  };
+  utterance.onerror = () => {
+    updateSpeechStatus("The reader could not start in this browser session. Open the app normally with sound on, then tap Read this page again.");
+    speechState.active = false;
+    speechState.paused = false;
+  };
+  speechState.utterance = utterance;
+  window.speechSynthesis.speak(utterance);
+}
+
+function readWorkbook(id) {
+  const workbook = getWorkbook(id);
+  if (!workbook) return;
+  startSpeechQueue(buildWorkbookSpeechQueue(workbook), workbook.workbookTitle);
+}
+
+function readWorkbookOpening(id) {
+  const workbook = getWorkbook(id);
+  if (!workbook) return;
+  startSpeechQueue([{ title: "Big Question", text: buildOpeningSpeech(workbook) }], workbook.workbookTitle);
+}
+
+function readWorkbookSection(id, sectionIndex) {
+  const workbook = getWorkbook(id);
+  const section = workbook?.sections?.[sectionIndex];
+  if (!workbook || !section) return;
+  startSpeechQueue([{ title: section.title, text: buildSectionSpeech(section) }], section.title);
+}
+
+function pauseReading() {
+  if (!speechSupported() || !speechState.active) return;
+  window.speechSynthesis.pause();
+  speechState.paused = true;
+  updateSpeechStatus(`Paused: ${speechState.currentTitle || speechState.label}`);
+}
+
+function resumeReading() {
+  if (!speechSupported() || !speechState.active) return;
+  window.speechSynthesis.resume();
+  speechState.paused = false;
+  updateSpeechStatus(`Reading: ${speechState.currentTitle || speechState.label}`);
+}
+
+function stopReading(options = {}) {
+  if (speechSupported()) window.speechSynthesis.cancel();
+  speechState.active = false;
+  speechState.paused = false;
+  speechState.label = "";
+  speechState.currentTitle = "";
+  speechState.queue = [];
+  speechState.index = 0;
+  speechState.utterance = null;
+  if (!options.silent) updateSpeechStatus("Reader stopped. Tap a read button to begin again.");
+}
+
+function finishReading() {
+  speechState.active = false;
+  speechState.paused = false;
+  const label = speechState.label || "Workbook";
+  speechState.queue = [];
+  speechState.index = 0;
+  speechState.utterance = null;
+  updateSpeechStatus(`Finished reading ${label}.`);
+}
+
+function updateSpeechStatus(message) {
+  document.querySelectorAll("[data-speech-status]").forEach((element) => {
+    element.textContent = message;
+  });
+}
+
 function workbookStatus(book, profile) {
   if (profile?.completedWorkbooks?.includes(book.id)) return "done";
   if (book.status === "ready") return "ready";
@@ -1993,6 +2179,12 @@ function escapeSvg(value) {
 }
 
 window.addEventListener("load", () => {
+  if (speechSupported()) {
+    loadSpeechVoices();
+    if ("onvoiceschanged" in window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = loadSpeechVoices;
+    }
+  }
   if (hasSharedProfiles()) {
     window.ProfileAPI.onChange?.(() => {
       view = "world";
