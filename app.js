@@ -903,18 +903,12 @@ function worldSvg(interactive = true, profile = activeProfile()) {
   const areas = AREAS.map((area) => {
     const books = areaWorkbooks(area.id);
     const completed = books.filter((book) => profile?.completedWorkbooks?.includes(book.id)).length;
-    const status = completed && completed === books.filter((book) => book.status === "ready").length ? "done" : area.id === activeAreaId ? "active" : "";
+    const readyCount = books.filter((book) => book.status === "ready").length;
+    const status = readyCount && completed === readyCount ? "done" : area.id === activeAreaId ? "active" : "";
     const attrs = interactive
       ? `role="button" tabindex="0" data-area="${area.id}" data-testid="button-area-${area.id}" aria-label="${escapeHtml(area.title)}"`
       : "";
-    return `
-      <g class="world-area area-${area.color} ${status}" transform="translate(${area.marker.x} ${area.marker.y})" ${attrs}>
-        <circle class="area-halo" r="10.5"></circle>
-        <circle class="area-core" r="7.2"></circle>
-        <text class="area-emoji" x="0" y="1.2" text-anchor="middle">${area.icon}</text>
-        <text class="area-label" x="0" y="15.4" text-anchor="middle">${escapeSvg(area.shortTitle)}</text>
-      </g>
-    `;
+    return worldAreaSvg(area, status, attrs);
   }).join("");
 
   return `
@@ -925,34 +919,202 @@ function worldSvg(interactive = true, profile = activeProfile()) {
           <stop offset=".52" stop-color="#F0DFC0"/>
           <stop offset="1" stop-color="#DDBF82"/>
         </linearGradient>
+        <linearGradient id="mapGrass-${suffix}" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#DDE8D4"/>
+          <stop offset="1" stop-color="#BFD4B3"/>
+        </linearGradient>
+        <linearGradient id="mapField-${suffix}" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#E7D394"/>
+          <stop offset="1" stop-color="#C8A978"/>
+        </linearGradient>
+        <linearGradient id="mapWater-${suffix}" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#C9DCE3"/>
+          <stop offset="1" stop-color="#8DB0C0"/>
+        </linearGradient>
+        <pattern id="fieldRows-${suffix}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-19)">
+          <rect width="4" height="4" fill="transparent"/>
+          <path d="M0 1h4" stroke="#8B6D32" stroke-opacity=".22" stroke-width=".35"/>
+        </pattern>
+        <pattern id="townBlocks-${suffix}" width="5" height="5" patternUnits="userSpaceOnUse">
+          <rect width="5" height="5" fill="transparent"/>
+          <path d="M5 0H0v5" fill="none" stroke="#241A12" stroke-opacity=".055" stroke-width=".35"/>
+        </pattern>
         <filter id="worldShadow-${suffix}" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="1.2" stdDeviation="1.4" flood-color="#241A12" flood-opacity=".17"/>
         </filter>
       </defs>
       <rect x="2" y="2" width="96" height="96" rx="12" fill="url(#worldPaper-${suffix})" stroke="#241A12" stroke-opacity=".16"/>
-      <path d="M15 72 C25 57 36 62 49 52 C61 43 60 29 49 18" fill="none" stroke="#C8A978" stroke-width="8" stroke-linecap="round" opacity=".82"/>
-      <path d="M49 52 C35 47 29 50 23 54" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
-      <path d="M51 51 C64 47 70 51 75 55" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
-      <path d="M57 43 C65 35 72 31 78 29" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
-      <path d="M40 59 C32 67 25 73 22 78" fill="none" stroke="#C8A978" stroke-width="7" stroke-linecap="round" opacity=".76"/>
-      <g class="world-landmarks" filter="url(#worldShadow-${suffix})">
-        <path d="M38 70h23v13H38z" fill="#FFF8E8" stroke="#241A12" stroke-opacity=".15"/>
-        <path d="M34 70h31l-15.5-13z" fill="#B84A32" stroke="#241A12" stroke-opacity=".15"/>
-        <path d="M46 75h7v8h-7z" fill="#F7F0DF" stroke="#241A12" stroke-opacity=".14"/>
-        <path d="M22 47h15v11H22z" fill="#FFF8E8"/><path d="M21 47h17l-2 3H23z" fill="#5E7FA3"/>
-        <path d="M68 49h16v11H68z" fill="#FFF8E8"/><path d="M67 49h18l-2 3H69z" fill="#2F5D46"/>
-        <path d="M69 22h18v12H69z" fill="#E9DCEC"/><path d="M72 17h12v5H72z" fill="#6E557E"/>
-        <path d="M13 73h18v10H13z" fill="#F2E4C6"/><path d="M13 73l9-8 9 8z" fill="#D7A84A"/>
-        <circle cx="84" cy="73" r="4" fill="#D7A84A" opacity=".5"/>
+      <path class="map-zone map-green" d="M5 9 C18 3 30 8 41 10 C55 13 70 5 86 8 C96 10 99 20 94 31 C88 43 76 42 64 38 C52 34 41 39 29 35 C16 31 8 25 5 9z" fill="url(#mapGrass-${suffix})"/>
+      <path class="map-zone map-town" d="M31 31 C42 23 58 23 69 31 C78 38 78 50 69 58 C57 68 39 65 28 55 C20 47 21 38 31 31z" fill="#EEDDBF"/>
+      <path class="map-zone map-services" d="M60 40 C72 35 89 39 94 51 C97 61 91 70 80 71 C66 73 58 64 58 52 C58 47 58 43 60 40z" fill="#D9E0DA"/>
+      <path class="map-zone map-products" d="M7 39 C16 32 31 34 39 43 C42 51 35 62 23 65 C12 67 5 59 6 49 C6 45 6 42 7 39z" fill="#E7DAC2"/>
+      <path class="map-zone map-fields" d="M5 67 C15 60 31 62 39 72 C45 81 38 94 22 95 C10 95 4 85 5 67z" fill="url(#mapField-${suffix})"/>
+      <path class="map-zone map-industrial" d="M63 13 C73 7 89 10 94 22 C98 32 90 43 78 42 C65 40 59 29 63 13z" fill="#DDD4C4"/>
+      <path class="map-water" d="M5 18 C12 20 15 27 17 34 C19 41 24 44 25 50 C14 50 7 47 5 41z" fill="url(#mapWater-${suffix})" opacity=".78"/>
+      <path class="map-field-rows" d="M5 67 C15 60 31 62 39 72 C45 81 38 94 22 95 C10 95 4 85 5 67z" fill="url(#fieldRows-${suffix})"/>
+      <path class="map-block-grid" d="M31 31 C42 23 58 23 69 31 C78 38 78 50 69 58 C57 68 39 65 28 55 C20 47 21 38 31 31z" fill="url(#townBlocks-${suffix})"/>
+      <g class="world-roads">
+        <path class="road-shadow" d="M49 92 C49 77 52 67 51 55 C50 43 50 31 49 11"/>
+        <path class="world-road road-main" d="M49 92 C49 77 52 67 51 55 C50 43 50 31 49 11"/>
+        <path class="world-road-line" d="M49 92 C49 77 52 67 51 55 C50 43 50 31 49 11"/>
+        <path class="world-road road-side" d="M51 53 C42 49 31 50 22 54"/>
+        <path class="world-road road-side" d="M51 53 C63 49 72 51 82 57"/>
+        <path class="world-road road-side" d="M55 42 C62 34 70 28 82 25"/>
+        <path class="world-road road-side" d="M43 63 C34 68 26 75 20 85"/>
+        <path class="world-road-line thin" d="M51 53 C42 49 31 50 22 54"/>
+        <path class="world-road-line thin" d="M51 53 C63 49 72 51 82 57"/>
+        <path class="world-road-line thin" d="M55 42 C62 34 70 28 82 25"/>
+        <path class="world-road-line thin" d="M43 63 C34 68 26 75 20 85"/>
       </g>
-      <g class="world-dots" opacity=".55">
-        <circle cx="15" cy="22" r="1.1" fill="#2F5D46"/><circle cx="18" cy="27" r=".8" fill="#2F5D46"/>
-        <circle cx="86" cy="43" r="1.1" fill="#B84A32"/><circle cx="82" cy="40" r=".75" fill="#B84A32"/>
-        <circle cx="12" cy="91" r="1" fill="#6E557E"/><circle cx="90" cy="88" r=".85" fill="#5E7FA3"/>
+      <g class="map-detail-buildings" filter="url(#worldShadow-${suffix})">
+        <g class="map-building school-building">
+          <path d="M38 70h24v13H38z"/>
+          <path class="roof red" d="M34 70h32L50 58z"/>
+          <path d="M47 75h6v8h-6z" fill="#F7F0DF"/>
+          <path d="M48 64h4v4h-4z" fill="#FFF8E8"/>
+          <path d="M50 61v-4" stroke="#241A12" stroke-opacity=".35" stroke-width=".55"/>
+        </g>
+        <g class="map-building main-block">
+          <path d="M38 39h7v10h-7zM46 37h8v12h-8zM55 40h8v9h-8z"/>
+          <path class="roof blue" d="M37 39h27l-2 3H39z"/>
+          <path d="M40 43h2v6h-2zM49 42h2v7h-2zM58 44h2v5h-2z" fill="#F7F0DF"/>
+        </g>
+        <g class="map-building product-stalls">
+          <path d="M18 49h7v7h-7zM27 47h7v8h-7zM14 58h19v4H14z"/>
+          <path class="roof gold" d="M17 49h9l-1.2 2.2h-6.6zM26 47h9l-1.2 2.2h-6.6z"/>
+        </g>
+        <g class="map-building service-row">
+          <path d="M68 50h7v10h-7zM77 47h8v13h-8z"/>
+          <path class="roof green" d="M67 50h19l-2 3H69z"/>
+          <path d="M70 54h2v6h-2zM80 52h2v8h-2z" fill="#F7F0DF"/>
+        </g>
+        <g class="map-building farm-set">
+          <path d="M14 77h13v9H14z"/>
+          <path class="roof gold" d="M13 77l7.5-7 7.5 7z"/>
+          <path d="M18 81h5v5h-5z" fill="#F7F0DF"/>
+          <path d="M28 72h5v14h-5z" fill="#FFF8E8"/>
+        </g>
+        <g class="map-building maker-works">
+          <path d="M70 25h18v11H70z"/>
+          <path d="M74 19h4v6h-4zM82 17h4v8h-4z" fill="#8C7B73"/>
+          <path class="roof purple" d="M69 25h20l-4-4-4 4-4-4-4 4z"/>
+          <path d="M73 29h3v7h-3zM79 29h3v7h-3zM85 29h2v7h-2z" fill="#F7F0DF"/>
+        </g>
+        <g class="map-building growth-depot">
+          <path d="M42 14h15v8H42z"/>
+          <path class="roof blue" d="M41 14h17l-2 2.5H43z"/>
+          <path d="M59 18h8l3 3h-11z" fill="#F7F0DF"/>
+          <circle cx="61" cy="22.5" r="1" fill="#241A12" opacity=".55"/>
+          <circle cx="68" cy="22.5" r="1" fill="#241A12" opacity=".55"/>
+        </g>
+      </g>
+      <g class="map-detail-nature">
+        <path d="M8 23 C12 25 13 29 12 34" fill="none" stroke="#FFF8E8" stroke-opacity=".52" stroke-width=".9" stroke-linecap="round"/>
+        <circle cx="17" cy="31" r="1.55" fill="#2F5D46"/><circle cx="20" cy="33" r="1.25" fill="#2F5D46"/>
+        <circle cx="87" cy="46" r="1.45" fill="#2F5D46"/><circle cx="90" cy="49" r="1.1" fill="#2F5D46"/>
+        <circle cx="38" cy="86" r="1.35" fill="#2F5D46"/><circle cx="42" cy="87" r="1.1" fill="#2F5D46"/>
+        <path d="M11 87c5 1 12 1 18-1M12 82c5 1 14 .5 21-2M13 75c5 1.2 13 .8 20-1" stroke="#8B6D32" stroke-opacity=".36" stroke-width=".6" stroke-linecap="round"/>
       </g>
       ${areas}
     </svg>
   `;
+}
+
+function worldAreaSvg(area, status, attrs) {
+  const safeTitle = escapeSvg(area.title);
+  const safeShort = escapeSvg(area.shortTitle);
+  const className = `world-area world-area-${area.id} area-${area.color} ${status}`;
+  const stamp = status === "done"
+    ? `<g class="area-stamp" aria-hidden="true"><circle cx="0" cy="0" r="3.1"></circle><path d="M-1.5 0l1 1.2 2.2-2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`
+    : "";
+
+  const label = (x, y, width = 17) => `
+    <g class="area-map-label" transform="translate(${x} ${y})">
+      <rect x="${-width / 2}" y="-3.15" width="${width}" height="6.3" rx="1.8"></rect>
+      <text x="0" y=".85" text-anchor="middle">${safeShort}</text>
+    </g>
+  `;
+
+  const pin = (x, y) => `
+    <g class="area-map-pin" transform="translate(${x} ${y})">
+      <circle class="pin-ring" r="3.15"></circle>
+      <circle class="pin-dot" r="1.45"></circle>
+    </g>
+  `;
+
+  const group = (body) => `
+    <g class="${className}" ${attrs}>
+      <title>${safeTitle}</title>
+      ${body}
+    </g>
+  `;
+
+  switch (area.id) {
+    case "schoolhouse":
+      return group(`
+        <rect class="area-hit" x="35" y="59" width="31" height="29" rx="6"></rect>
+        <path class="area-outline" d="M35 65 C40 58 53 56 63 62 C68 69 65 83 56 87 C45 91 35 82 35 65z"></path>
+        ${pin(50, 69)}
+        ${label(50, 91, 21)}
+        <g class="area-stamp-holder" transform="translate(62 63)">${stamp}</g>
+      `);
+    case "main-street":
+      return group(`
+        <rect class="area-hit" x="34" y="31" width="33" height="28" rx="6"></rect>
+        <path class="area-outline" d="M34 34 C43 27 58 28 66 36 C72 44 66 57 54 60 C42 62 32 52 34 34z"></path>
+        ${pin(51, 45)}
+        ${label(51, 30, 21)}
+        <g class="area-stamp-holder" transform="translate(63 36)">${stamp}</g>
+      `);
+    case "products":
+      return group(`
+        <rect class="area-hit" x="7" y="38" width="33" height="28" rx="7"></rect>
+        <path class="area-outline" d="M8 42 C17 34 32 36 39 44 C43 53 34 65 20 66 C10 66 4 56 8 42z"></path>
+        ${pin(24, 53)}
+        ${label(24, 39, 20)}
+        <g class="area-stamp-holder" transform="translate(35 46)">${stamp}</g>
+      `);
+    case "services":
+      return group(`
+        <rect class="area-hit" x="60" y="41" width="35" height="31" rx="7"></rect>
+        <path class="area-outline" d="M61 45 C72 37 89 42 94 53 C98 65 88 73 76 72 C65 71 58 58 61 45z"></path>
+        ${pin(78, 55)}
+        ${label(78, 40, 18)}
+        <g class="area-stamp-holder" transform="translate(90 51)">${stamp}</g>
+      `);
+    case "farm-fields":
+      return group(`
+        <rect class="area-hit" x="5" y="64" width="35" height="32" rx="7"></rect>
+        <path class="area-outline" d="M6 68 C15 60 31 63 39 73 C44 83 36 95 22 96 C9 96 2 84 6 68z"></path>
+        ${pin(22, 78)}
+        ${label(23, 66, 19)}
+        <g class="area-stamp-holder" transform="translate(35 75)">${stamp}</g>
+      `);
+    case "maker-works":
+      return group(`
+        <rect class="area-hit" x="62" y="12" width="34" height="31" rx="7"></rect>
+        <path class="area-outline" d="M64 14 C74 7 90 11 95 23 C99 35 89 44 77 43 C65 41 58 27 64 14z"></path>
+        ${pin(78, 28)}
+        ${label(79, 13, 19)}
+        <g class="area-stamp-holder" transform="translate(92 24)">${stamp}</g>
+      `);
+    case "growth-road":
+      return group(`
+        <rect class="area-hit" x="37" y="7" width="29" height="20" rx="6"></rect>
+        <path class="area-outline" d="M38 10 C46 6 58 7 65 13 C67 21 61 27 51 27 C41 27 35 18 38 10z"></path>
+        ${pin(50, 18)}
+        ${label(50, 8, 22)}
+        <g class="area-stamp-holder" transform="translate(62 16)">${stamp}</g>
+      `);
+    default:
+      return group(`
+        <circle class="area-hit" cx="${area.marker.x}" cy="${area.marker.y}" r="10"></circle>
+        <circle class="area-outline" cx="${area.marker.x}" cy="${area.marker.y}" r="8"></circle>
+        ${pin(area.marker.x, area.marker.y)}
+        ${label(area.marker.x, area.marker.y + 13, 20)}
+        <g class="area-stamp-holder" transform="translate(${area.marker.x + 8} ${area.marker.y - 7})">${stamp}</g>
+      `);
+  }
 }
 
 function areaMapSvg(area, interactive = true, profile = activeProfile()) {

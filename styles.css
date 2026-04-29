@@ -1682,6 +1682,14 @@ textarea {
     grid-template-columns: minmax(0, 1fr) 24rem;
     align-items: stretch;
   }
+
+  .town-shell.world-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .world-shell .area-sheet {
+    max-width: none;
+  }
 }
 
 .town-stage {
@@ -1741,6 +1749,7 @@ textarea {
   min-height: 35rem;
   border-radius: var(--radius-lg);
   background: #eadcbd;
+  box-shadow: inset 0 0 0 1px rgba(36, 26, 18, 0.08);
 }
 
 .mini-town-preview .founder-town-map,
@@ -1750,6 +1759,10 @@ textarea {
 }
 
 .world-stage {
+  display: grid;
+  grid-template-columns: minmax(14rem, 19rem) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
   background:
     radial-gradient(circle at 50% 68%, rgba(215, 168, 74, 0.26), transparent 16rem),
     radial-gradient(circle at 20% 52%, rgba(94, 127, 163, 0.16), transparent 18rem),
@@ -1757,19 +1770,236 @@ textarea {
     #eadcbd;
 }
 
+.world-stage .town-title-card {
+  position: relative;
+  inset: auto;
+  width: auto;
+  align-self: center;
+  background: rgba(255, 249, 235, 0.9);
+  pointer-events: auto;
+}
+
+.world-stage .founder-world-map {
+  justify-self: center;
+  width: min(100%, 44rem);
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.world-stage .town-controls {
+  position: static;
+  grid-column: 2;
+  justify-self: end;
+  align-self: start;
+  margin-top: calc(-1 * var(--space-2));
+}
+
 .world-area {
   cursor: pointer;
   transform-box: fill-box;
   transform-origin: center;
   transition:
-    transform 180ms var(--ease-out),
-    opacity 180ms var(--ease-out);
+    opacity 180ms var(--ease-out),
+    filter 180ms var(--ease-out);
 }
 
 .world-area:hover,
 .world-area:focus,
 .world-area.active {
-  transform: scale(1.12);
+  filter: drop-shadow(0 2px 2px rgba(36, 26, 18, 0.2));
+  outline: none;
+}
+
+.map-zone {
+  stroke: rgba(36, 26, 18, 0.08);
+  stroke-width: 0.45;
+}
+
+.map-town {
+  stroke: rgba(36, 26, 18, 0.1);
+}
+
+.map-water {
+  stroke: rgba(94, 127, 163, 0.36);
+  stroke-width: 0.5;
+}
+
+.map-field-rows,
+.map-block-grid {
+  pointer-events: none;
+}
+
+.world-roads {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.road-shadow {
+  stroke: rgba(36, 26, 18, 0.16);
+  stroke-width: 8.9;
+  transform: translate(0.5px, 0.75px);
+}
+
+.world-road {
+  stroke: #c8a978;
+  stroke-width: 7.9;
+}
+
+.world-road.road-main {
+  stroke-width: 8.8;
+}
+
+.world-road.road-side {
+  stroke-width: 6.7;
+}
+
+.world-road-line {
+  stroke: rgba(255, 248, 232, 0.95);
+  stroke-width: 2.25;
+  stroke-dasharray: 4.5 4.2;
+}
+
+.world-road-line.thin {
+  stroke-width: 1.75;
+  stroke-dasharray: 3.6 3.6;
+}
+
+.map-detail-buildings .map-building > path:first-child,
+.map-detail-buildings .map-building path:not(.roof) {
+  fill: #fff8e8;
+  stroke: rgba(36, 26, 18, 0.16);
+  stroke-width: 0.35;
+}
+
+.map-detail-buildings .roof {
+  stroke: rgba(36, 26, 18, 0.15);
+  stroke-width: 0.35;
+}
+
+.map-detail-buildings .roof.red {
+  fill: #b84a32;
+}
+
+.map-detail-buildings .roof.blue {
+  fill: #5e7fa3;
+}
+
+.map-detail-buildings .roof.green {
+  fill: #2f5d46;
+}
+
+.map-detail-buildings .roof.gold {
+  fill: #d7a84a;
+}
+
+.map-detail-buildings .roof.purple {
+  fill: #6e557e;
+}
+
+.map-detail-nature {
+  pointer-events: none;
+}
+
+.area-hit {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.area-outline {
+  fill: rgba(255, 248, 232, 0.02);
+  stroke: rgba(36, 26, 18, 0);
+  stroke-width: 1.15;
+  stroke-dasharray: 2.5 2.2;
+  transition:
+    fill 180ms var(--ease-out),
+    stroke 180ms var(--ease-out),
+    stroke-width 180ms var(--ease-out);
+}
+
+.world-area:hover .area-outline,
+.world-area:focus .area-outline,
+.world-area.active .area-outline {
+  fill: rgba(255, 248, 232, 0.18);
+  stroke: rgba(36, 26, 18, 0.58);
+  stroke-width: 1.3;
+}
+
+.world-area.done .area-outline {
+  stroke: rgba(47, 93, 70, 0.68);
+}
+
+.area-map-pin {
+  pointer-events: none;
+}
+
+.area-map-pin .pin-ring {
+  fill: rgba(255, 248, 232, 0.82);
+  stroke: rgba(36, 26, 18, 0.22);
+  stroke-width: 0.55;
+}
+
+.area-map-pin .pin-dot {
+  fill: var(--gold);
+  stroke: #fff8e8;
+  stroke-width: 0.5;
+}
+
+.area-red .area-map-pin .pin-dot {
+  fill: var(--red);
+}
+
+.area-blue .area-map-pin .pin-dot {
+  fill: var(--blue);
+}
+
+.area-green .area-map-pin .pin-dot {
+  fill: var(--ledger);
+}
+
+.area-purple .area-map-pin .pin-dot {
+  fill: var(--purple);
+}
+
+.world-area.done .area-map-pin .pin-dot {
+  fill: var(--ledger);
+}
+
+.area-map-label {
+  pointer-events: none;
+}
+
+.area-map-label rect {
+  fill: rgba(255, 248, 232, 0.92);
+  stroke: rgba(36, 26, 18, 0.18);
+  stroke-width: 0.5;
+  filter: drop-shadow(0 0.8px 0.6px rgba(36, 26, 18, 0.11));
+}
+
+.area-map-label text {
+  font-family: var(--font-body);
+  font-size: 2.45px;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  fill: var(--ink);
+  stroke: transparent;
+  text-transform: uppercase;
+}
+
+.area-stamp-holder {
+  pointer-events: none;
+}
+
+.area-stamp circle {
+  fill: rgba(255, 248, 232, 0.9);
+  stroke: var(--ledger);
+  stroke-width: 0.6;
+}
+
+.area-stamp path {
+  stroke: var(--ledger);
+  stroke-width: 0.65;
 }
 
 .world-area .area-halo {
@@ -2288,11 +2518,28 @@ textarea {
     padding: var(--space-2);
   }
 
+  .world-stage {
+    display: block;
+  }
+
   .town-title-card {
     top: var(--space-2);
     left: var(--space-2);
     width: min(18rem, calc(100% - 1rem));
     padding: var(--space-3);
+  }
+
+  .world-stage .town-title-card {
+    width: auto;
+    margin-bottom: var(--space-2);
+  }
+
+  .world-stage .town-controls {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    justify-content: stretch;
+    margin-top: var(--space-3);
   }
 
   .town-title-card h1 {
@@ -2309,8 +2556,8 @@ textarea {
   }
 
   .founder-world-map {
-    height: 62dvh;
-    min-height: 31rem;
+    height: auto;
+    min-height: 29rem;
   }
 
   .town-pin .pin-label,
